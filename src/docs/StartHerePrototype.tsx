@@ -5,6 +5,7 @@ import { R2Img, type R2Slot } from '../brand/rounds/round2/imagery'
 import { ProtoCtx, type ProtoApi } from '../prototype/ProtoContext'
 import { FLOWS, type Flow } from '../prototype/flows'
 import { renderStep } from '../prototype/flows/render'
+import '../prototype/modals'
 import '../prototype/prototype.css'
 import { PrivacyPromise } from '../screens/user/01-onboarding/PrivacyPromise'
 import { AskFollowUp, AskReviewOffer, AskSummary } from '../screens/user/03-ask/AskScreens'
@@ -41,7 +42,7 @@ function Live({ children }: { children: ReactNode }) {
   return (
     <ProtoCtx.Provider value={STILL}>
       <DirectionProvider id={dir}>
-        <div style={{ height: '100%', pointerEvents: 'none' }} aria-hidden>{children}</div>
+        <div data-proto-still style={{ height: '100%', pointerEvents: 'none' }} aria-hidden>{children}</div>
       </DirectionProvider>
     </ProtoCtx.Provider>
   )

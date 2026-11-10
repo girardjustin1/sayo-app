@@ -5,6 +5,7 @@ import { ProtoCtx, type ProtoApi } from './ProtoContext'
 import { FLOWS, type Flow, type FlowId } from './flows'
 import { renderStep } from './flows/render'
 import { Launcher } from './Launcher'
+import './modals'
 import './prototype.css'
 
 type Route = { flow: FlowId | null; step?: string }

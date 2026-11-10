@@ -108,3 +108,13 @@ html:has(.proto-page, .proto-root), html:has(.proto-page, .proto-root) body, htm
 
 /* Flow maps: many tiles at once, so the hint ring holds still. */
 .proto-map [data-hot-auto] { animation: none; box-shadow: 0 0 0 3px rgb(14 165 233 / 0.95), 0 0 0 8px rgb(14 165 233 / 0.25); }
+
+/*
+ * Dialogs and drawers kept inside the frame (see modals.ts). The device area is the
+ * reference box for their `position: fixed`, so a drawer is exactly as tall as the
+ * screen (its footer buttons stay visible) and the dim backdrop is clipped to it.
+ */
+.proto-device, [data-proto-still] { transform: translateZ(0); overflow: hidden; }
+dialog[data-proto-modal][open] { outline: 200vmax solid rgb(20 16 24 / 0.38); z-index: 50; }
+dialog.astryx-dialog[data-proto-modal][open] { inset: 0; margin: auto; max-height: calc(100% - 48px); }
+dialog.astryx-drawer[data-proto-modal][open] { top: 0; bottom: 0; height: 100%; max-height: 100%; }

@@ -95,7 +95,9 @@ export function ProtoScreen({ rules, children }: { rules: Rule[]; children: Reac
       onClickCapture={(e) => {
         const el = (e.target as Element).closest(TAPPABLE)
         if (!el || !ref.current?.contains(el)) return
-        tap()
+        // Count the tap after this click has finished. Updating state now would re-render in the
+        // middle of the click and undo a checkbox, switch or radio before its own handler runs.
+        setTimeout(tap, 0)
         // Innermost first: a row may contain its own buttons.
         let node: Element | null = el
         while (node && ref.current.contains(node)) {

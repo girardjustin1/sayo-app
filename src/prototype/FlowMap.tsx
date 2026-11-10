@@ -5,6 +5,7 @@ import { Bullets, DocPage, DocSection, DocTitle, MiniBrowser, MiniPhone, Panel, 
 import { ProtoCtx, type ProtoApi } from './ProtoContext'
 import type { Flow, FlowStep } from './flows'
 import { renderStep } from './flows/render'
+import './modals'
 import './prototype.css'
 
 /** Story export name of each flow in Prototype/Click-through (for deep links). */
@@ -20,7 +21,7 @@ function Tile({ flow, step, n, direction }: { flow: Flow; step: FlowStep; n?: nu
   const live = (
     <ProtoCtx.Provider value={STILL}>
       <DirectionProvider id={direction}>
-        <div style={{ height: '100%', pointerEvents: 'none' }} aria-hidden>{renderStep(flow, step.id)}</div>
+        <div data-proto-still style={{ height: '100%', pointerEvents: 'none' }} aria-hidden>{renderStep(flow, step.id)}</div>
       </DirectionProvider>
     </ProtoCtx.Provider>
   )
