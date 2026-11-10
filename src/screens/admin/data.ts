@@ -102,8 +102,8 @@ export const WAITING: WaitingCase[] = [
   { id: 'R-2086', topic: 'gbv', waitingMinutes: 26 * 60 + 10, redFlag: true, releasedCount: 1 },
   { id: 'R-2085', topic: 'pregnancy', waitingMinutes: 17 * 60 + 5, redFlag: false, releasedCount: 0 },
   { id: 'R-2083', topic: 'mental', waitingMinutes: 14 * 60, redFlag: false, assignee: 'Nurse Abena K.', releasedCount: 0 },
-  { id: 'R-2084', topic: 'contraception', waitingMinutes: 190, redFlag: false, releasedCount: 0 },
-  { id: 'R-2088', topic: 'sexual_health', waitingMinutes: 140, redFlag: false, assignee: 'Dr. Efua M.', releasedCount: 0 },
+  { id: 'R-2084', topic: 'contraception', waitingMinutes: 190, redFlag: false, assignee: 'Dr. Efua M.', releasedCount: 0 },
+  { id: 'R-2081', topic: 'sexual_health', waitingMinutes: 105, redFlag: false, releasedCount: 0 },
   { id: 'R-2089', topic: 'hiv_sti', waitingMinutes: 95, redFlag: true, releasedCount: 0 },
   { id: 'R-2082', topic: 'prep_pep', waitingMinutes: 25, redFlag: true, releasedCount: 0 },
 ]

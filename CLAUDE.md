@@ -45,6 +45,11 @@ The logo is fixed (traced SVGs in `src/brand/logo/`); directions change how it i
 - `src/components/` — SAYO building blocks composed from Astryx (`sayo/`), phone chrome.
 - `src/screens/user/<NN group>/`, `src/screens/pro/`, `src/screens/admin/`.
 - `src/docs/` — Start Here and other MDX pages.
+- `src/prototype/` — clickable flow prototypes built from the real screens (`pnpm dev` → http://localhost:5340).
+  A flow is a list of steps; each wraps one screen in `Proto` with tap rules matched by button label
+  (`hotspots.tsx`). Steps with fields use `Fill` (fields start empty and fill on tap; the panel's
+  "Prefill fields" switch fills them up front) and PINs use `Pin`. Screens are never edited for the prototype. After changing a flow or a screen label,
+  run `scripts/check-prototype.mjs` (walks every flow; needs playwright-core).
 - `src/data/fixtures.ts` — fictional sample data only.
 - `docs/research/` — Mobbin findings (`synthesis.md` first).
 

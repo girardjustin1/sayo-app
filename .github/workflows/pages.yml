@@ -26,9 +26,10 @@ jobs:
           cache: pnpm
       - run: pnpm install --frozen-lockfile
       - run: pnpm typecheck
-      # Storybook is the whole site: https://<owner>.github.io/sayo-app/
-      - run: pnpm exec storybook build --quiet --output-dir dist
-      - run: touch dist/.nojekyll
+      # Storybook at /sayo-app/, the clickable prototype at /sayo-app/prototype/
+      - run: pnpm build:pages
+        env:
+          VITE_BASE: /${{ github.event.repository.name }}/prototype/
       - uses: actions/upload-pages-artifact@v3
         with:
           path: dist

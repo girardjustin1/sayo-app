@@ -79,7 +79,7 @@ export function Professionals({ openId, suspendOpen = false }: ProfessionalsProp
       key: 'canReviewRealCases', header: 'Case access', width: pixel(130),
       renderCell: (r) => <Text size="sm" color={r.canReviewRealCases ? 'primary' : 'secondary'}>{r.canReviewRealCases ? 'Real Ghana cases' : r.status === 'approved' ? 'Training only' : 'None yet'}</Text>,
     },
-    { key: 'view', header: '', width: pixel(80), align: 'end', renderCell: (r) => <Button label={r.status === 'pending' ? 'Verify' : 'View'} size="sm" variant={r.status === 'pending' ? 'primary' : 'ghost'} onClick={() => setOpen(r.id)} /> },
+    { key: 'view', header: '', width: pixel(104), align: 'end', renderCell: (r) => <Button label={r.status === 'pending' ? 'Verify' : 'View'} size="sm" variant={r.status === 'pending' ? 'primary' : 'ghost'} onClick={() => setOpen(r.id)} /> },
   ]
 
   return (

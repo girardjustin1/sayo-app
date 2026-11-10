@@ -1,4 +1,6 @@
 import type { CSSProperties, ReactNode } from 'react'
+import '../prototype/modals'
+import '../prototype/prototype.css'
 
 /**
  * Layout kit for documentation pages (Start Here, Brand, Foundations). These pages
@@ -58,7 +60,11 @@ export function Bullets({ items }: { items: ReactNode[] }) {
   )
 }
 
-/** Small static phone frame for embedding screens in doc pages. */
+/**
+ * Small phone frame for showing a live screen in a doc page. Display only: the screen
+ * inside is inert, so it cannot take focus, swallow the page's scroll wheel or be clicked
+ * (a link wrapped around the phone still works), and a dialog it opens stays in the frame.
+ */
 export function MiniPhone({ children, scale = 0.62 }: { children: ReactNode; scale?: number }) {
   return (
     <div style={{ width: 390 * scale, height: 844 * scale, flex: 'none' }}>
@@ -69,8 +75,22 @@ export function MiniPhone({ children, scale = 0.62 }: { children: ReactNode; sca
           boxShadow: '0 0 0 10px #1d1b22, 0 0 0 11px #3a3742, 0 24px 60px rgb(40 10 40 / 0.25)',
         }}
       >
-        {children}
+        <div data-proto-still inert style={{ height: '100%' }}>{children}</div>
         <div style={{ position: 'absolute', top: 11, left: '50%', translate: '-50% 0', width: 120, height: 34, borderRadius: 20, background: '#000', zIndex: 60 }} />
+      </div>
+    </div>
+  )
+}
+
+/** A 1280 × 820 browser window scaled down, for the desktop tools. Display only, like MiniPhone. */
+export function MiniBrowser({ children, scale = 0.3 }: { children: ReactNode; scale?: number }) {
+  return (
+    <div style={{ width: 1280 * scale, height: 856 * scale, flex: 'none' }}>
+      <div style={{ width: 1280, height: 856, transform: `scale(${scale})`, transformOrigin: 'top left', borderRadius: 12, overflow: 'hidden', background: '#fff', boxShadow: '0 16px 40px rgb(0 0 0 / 0.16)' }}>
+        <div style={{ height: 36, background: '#F4F3F6', borderBottom: '1px solid #E4E2E8', display: 'flex', alignItems: 'center', gap: 6, padding: '0 14px' }}>
+          {[0, 1, 2].map((i) => <span key={i} style={{ width: 11, height: 11, borderRadius: '50%', background: '#D8D5DE' }} />)}
+        </div>
+        <div data-proto-still inert style={{ height: 820 }}>{children}</div>
       </div>
     </div>
   )

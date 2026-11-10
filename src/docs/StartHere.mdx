@@ -1,5 +1,6 @@
 import { Meta } from '@storybook/addon-docs/blocks'
-import { Hero, Bridge, DirectionCards, Pillars, InOut, StoryMap, A } from './StartHereVisuals'
+import { Hero, Bridge, DirectionCards, InOut, StoryMap, A } from './StartHereVisuals'
+import { Prototypes, Features, DirectionSwitch } from './StartHerePrototype'
 import { Journey } from './Journey'
 
 <Meta title="Start Here" />
@@ -10,37 +11,53 @@ import { Journey } from './Journey'
 
 SAYO gives young women a **private, stigma-free place to ask sensitive health questions**, understand what they may
 need, get verified professional guidance where appropriate, and find the right care. This Storybook is **phase 1**:
-every screen, state and brand idea as a story, before any backend exists. Nothing here talks to a server, and every
-person, clinic and case is **fictional sample data**.
+every screen and state as a story, before any backend exists. Nothing here talks to a server, and every person,
+clinic and case is **fictional sample data**.
 
-**Why it exists:** to agree on the product (the flows, the safety rules, the words and the look) while changing them
-is still a quick edit, and to give the founder something real to test with pilot users and show to funders.
+**Why it exists:** to agree on the product (the flows, the safety rules, the words and the look) cheaply, while
+changing it is still a quick edit, and to have something real to test with pilot users.
 
-## The bridge SAYO builds
+## Try the clickable prototype
+
+Five flows, built from the real screens: three for the young woman on her phone, one for the professional and one
+for the admin. Tap whatever glows; fields start empty and fill when you tap them (or switch on **Prefill fields**).
+The question they answer: **can SAYO take
+someone from a frightening question to the right next step, safely?**
+
+<Prototypes />
+
+On a phone, open the same links for the full-screen version. Locally, run `pnpm dev` and open
+http://localhost:5340. The same flows live here under **Prototype → Click-through**, and **Prototype → Flow maps**
+lays out every step of each flow on one page.
+
+## The brand is still open
+
+The logo is fixed: the heart-S mark, lowercase “sayo”, the coral dot. Everything around it is still being decided,
+so every screen, and the prototype, runs in four candidate directions. Pick one here to restyle every live screen on
+this page, or use the **Direction** toolbar at the top on any story.
+
+<DirectionSwitch />
+
+<DirectionCards />
+
+Compare them in full on <A href="./?path=/story/brand-round-2-current-directions-tokens--directions">Brand → Round 2 → Directions</A>.
+The first round (the pink set) is kept under Brand → Round 1 for comparison.
+
+## One question, end to end
 
 The whole MVP proves one thing: SAYO can safely move someone from silence to the right care.
 
 <Bridge />
 
-## Brand directions
+The same journey, screen by screen. Tap a step to open the prototype at that point.
 
-The logo is fixed: the heart-S mark, lowercase “sayo”, the coral dot. We explored it in rounds. **Round 2 (current)** has four
-personalities that move off pink: Ink, Clay, Quiet and Grove. Round 1 (the pink set) is kept for comparison. Every
-screen in this Storybook renders in all of them.
-Switch with the **Direction** toolbar at the top. Compare them on <A href="./?path=/story/brand-round-2-current-directions-tokens--directions">Brand → Round 2 → Directions</A>.
-
-<DirectionCards />
-
-## The core journey
-
-Onboarding → 18+ → PIN → Home → Ask SAYO → follow-ups → red-flag check → information → summary check → optional
-professional review → queue → professional response → discreet notification → My Reviews → Find Care.
+<DirectionSwitch />
 
 <Journey />
 
-## Four pillars
+## What we made, and why
 
-<Pillars />
+<Features />
 
 ## What is in, and what is deliberately out
 
@@ -48,20 +65,20 @@ professional review → queue → professional response → discreet notificatio
 
 ## Rules every screen follows
 
-- **AI never diagnoses.** Every AI answer is labelled AI and carries the locked line *“This is general health information, not a diagnosis.”*
-- **AI, peers and professionals never blur.** Only Verified Professionals get the green ✓ badge.
-- **Privacy first.** 4-digit PIN, nickname and generated avatar in the Circle, private Ask SAYO history never visible there.
+- **AI never diagnoses.** Every AI answer is labelled AI and carries the fixed line *“This is general health information, not a diagnosis.”*
+- **AI, peers and professionals never blur.** Only Verified Professionals get the verified badge and tint.
+- **Privacy first.** A 4-digit PIN, a nickname and generated avatar in the Circle, and private Ask SAYO history never visible there.
 - **Discreet notifications.** Lock-screen text never names a health topic.
-- **Safety beats the questionnaire.** In GBV and red-flag moments, urgent information comes first, and **Quick exit** is always one tap away.
-- **Locked copy.** Safety and clinical wording is the same in every direction (see <A href="./?path=/story/brand-round-2-current-directions-tokens--voice-and-copy">Voice & Copy</A>).
+- **Safety beats the questionnaire.** In violence and red-flag moments urgent information comes first, and **Quick exit** is always one tap away.
+- **Fixed wording.** Safety and clinical wording is the same in every direction (see <A href="./?path=/story/brand-round-2-current-directions-tokens--voice-and-copy">Voice & copy</A>).
 
 ## How to look around
 
+- **Prototype/** has the click-through (five flows, with a panel for Jump to, Prefill fields and tap hints) and a flow map per flow.
 - **Toolbar → Direction** switches every screen between D · Ink, E · Clay, F · Quiet and G · Grove (and the round-1 pink set).
-- **User/** is the mobile app (390 × 844 phone). **Professional/** and **Admin/** are desktop web tools.
-- Every important state has its own story: empty, waiting, error, red flag, offline, urgent…
-- **Brand/** holds the shared logo and one folder per round of exploration (directions, voice and copy, live Astryx tokens, imagery). Round 2 is current; round 1 (pink) is kept for comparison.
-- **Planning/** holds the tech decisions, open questions and next steps.
+- **User/** is the phone app, **Professional/** and **Admin/** are desktop tools. Every important state has its own story: empty, waiting, error, red flag, offline, urgent…
+- **Brand/** holds the shared logo and one folder per round of exploration (directions, voice and copy, tokens, imagery, landing pages).
+- **Research/** holds the Mobbin and Hers studies; **Planning/** holds the tech proposal, open questions and next steps.
 
 ## Built on Astryx
 

@@ -99,12 +99,13 @@ const CONCERN_TEST_RESULT: Concern = {
 export const QUEUE: QueueCase[] = [
   { id: 'R-2082', concern: CONCERN_PEP, topic: 'prep_pep', ageBand: '21–24', waitingMinutes: 25, status: 'queued' },
   { id: 'R-2089', concern: CONCERN_TEST_RESULT, topic: 'hiv_sti', ageBand: '25–29', waitingMinutes: 95, status: 'queued' },
-  { id: 'R-2084', concern: CONCERN_PILL, topic: 'contraception', ageBand: '18–20', waitingMinutes: 190, status: 'queued' },
+  { id: 'R-2084', concern: CONCERN_PILL, topic: 'contraception', ageBand: '18–20', waitingMinutes: 190, status: 'in_review', acceptedBy: 'Dr. Efua M.' },
   { id: 'R-2086', concern: CONCERN_GBV_HISTORY, topic: 'gbv', ageBand: '21–24', waitingMinutes: 26 * 60 + 10, status: 'queued' },
   { id: 'R-2085', concern: CONCERN_LATE_PERIOD, topic: 'pregnancy', ageBand: '18–20', waitingMinutes: 17 * 60 + 5, status: 'queued' },
   { id: 'R-2087', concern: CONCERN_ALCOHOL, topic: 'substance', ageBand: '25–29', waitingMinutes: 33 * 60 + 40, status: 'queued' },
   { id: 'R-2083', concern: CONCERN_LOW_MOOD, topic: 'mental', ageBand: '21–24', waitingMinutes: 14 * 60, status: 'in_review', acceptedBy: 'Nurse Abena K.' },
-  { id: 'R-2088', concern: { ...CONCERN_DISCHARGE, id: 'c-1052' }, topic: 'sexual_health', ageBand: '18–20', waitingMinutes: 2 * 60 + 20, status: 'in_review', acceptedBy: 'Dr. Efua M.' },
+  // The same question the young woman sends in the user app (fixtures CASES R-2081), still waiting here.
+  { id: 'R-2081', concern: CONCERN_DISCHARGE, topic: 'sexual_health', ageBand: '18–20', waitingMinutes: 105, status: 'queued' },
 ]
 
 /** Fictional training cases, the only cases a foreign-licensed reviewer can open. */

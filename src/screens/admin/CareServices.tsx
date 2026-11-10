@@ -51,8 +51,8 @@ export function CareServices({ editId }: CareServicesProps) {
       key: 'verified', header: 'Verified', width: pixel(110),
       renderCell: (r) => (r.verified ? <Badge variant="green" label="Verified" icon={<BadgeCheck size={12} />} /> : <Badge variant="warning" label="Not yet" />),
     },
-    { key: 'youthFriendly', header: 'Youth-friendly', width: pixel(110), renderCell: (r) => <Text size="sm" color={r.youthFriendly ? 'primary' : 'secondary'}>{r.youthFriendly ? 'Yes' : '—'}</Text> },
-    { key: 'edit', header: '', width: pixel(72), align: 'end', renderCell: (r) => <Button label="Edit" size="sm" variant="ghost" onClick={() => setEdit(r.id)} /> },
+    { key: 'youthFriendly', header: 'Youth-friendly', width: pixel(140), renderCell: (r) => <Text size="sm" color={r.youthFriendly ? 'primary' : 'secondary'}>{r.youthFriendly ? 'Yes' : '—'}</Text> },
+    { key: 'edit', header: '', width: pixel(96), align: 'end', renderCell: (r) => <Button label="Edit" size="sm" variant="ghost" onClick={() => setEdit(r.id)} /> },
   ]
 
   return (
