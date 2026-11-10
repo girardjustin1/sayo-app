@@ -1,0 +1,53 @@
+/*
+ * Professional dashboard + admin console extras. Only what Astryx has no prop for.
+ * Colours come from Astryx tokens (--color-*) or the direction's --sayo-* tokens.
+ */
+
+/* Fit the shell to the Storybook desktop frame (820px) instead of the viewport. */
+.sayo-console { height: 100%; }
+.sayo-console .astryx-app-shell { height: 100% !important; min-height: 0 !important; }
+
+/* Consoles are calm whatever the direction: no display face, plain body type. */
+.sayo-console h1, .sayo-console h2, .sayo-console h3 { font-family: var(--font-family-body); letter-spacing: normal; }
+
+/* The user's own words, verbatim: quoted, not paraphrased, not styled as ours. */
+.sayo-verbatim {
+  border-left: 3px solid var(--color-border-emphasized);
+  background: var(--color-background-surface);
+  border-radius: 0 var(--radius-md, 8px) var(--radius-md, 8px) 0;
+  padding: var(--spacing-3) var(--spacing-4);
+  font-size: 15px;
+  line-height: 1.55;
+  white-space: pre-wrap;
+}
+
+/* AI-generated content: tinted and labelled so it never reads as the user's or the reviewer's words. */
+.sayo-ai-block {
+  background: var(--sayo-ai-soft);
+  border: 1px dashed var(--color-border-emphasized);
+  border-radius: var(--radius-md, 8px);
+  padding: var(--spacing-3) var(--spacing-4);
+}
+
+/* Preview of what the user will see: a phone-width column inside the composer. */
+.sayo-user-preview {
+  background: var(--color-background-body);
+  border: 1px solid var(--color-border);
+  border-radius: var(--sayo-card-radius);
+  padding: var(--spacing-4);
+  max-width: 360px;
+}
+
+/* Stat tile number. */
+.sayo-stat { font-size: 28px; font-weight: 650; line-height: 1.1; font-variant-numeric: tabular-nums; }
+
+/* Small square icon tile used in scope lists. */
+.sayo-icon-tile {
+  flex: none; display: grid; place-items: center;
+  width: 32px; height: 32px; border-radius: var(--radius-md, 8px);
+  background: var(--sayo-soft); color: var(--color-accent);
+}
+.sayo-icon-tile[data-tone='no'] { background: var(--color-background-muted, var(--sayo-ai-soft)); color: var(--color-text-secondary); }
+
+/* Signed-out pages paint their own background. */
+.sayo-auth-page { height: 100%; background: var(--sayo-hero); overflow: auto; }

@@ -1,0 +1,44 @@
+/*
+ * Onboarding, Home and Me helpers that Astryx has no component for: the intro
+ * illustration, the mock lock screen, the in-phone dialog scrim and the hero that runs
+ * under the overlaid status bar. Metrics are Astryx tokens; colours are --color-* or
+ * the direction's --sayo-* tokens.
+ */
+
+/* ---------- hero under the overlaid status bar (Home, Me) ---------- */
+.sayo-hero-top { padding-block-start: calc(var(--sayo-statusbar-height, 50px) + var(--spacing-3)); }
+[data-hero='dark'] .sayo-hero-top {
+  border-end-start-radius: var(--radius-page);
+  border-end-end-radius: var(--radius-page);
+}
+
+/* ---------- intro illustration ---------- */
+.sayo-onb-art {
+  position: relative;
+  overflow: hidden;
+  border-radius: var(--radius-page);
+  background: var(--sayo-soft);
+  color: var(--color-accent);
+}
+[data-direction='unmuted'] .sayo-onb-art { background: var(--sayo-gradient); color: #fff; }
+.sayo-onb-art__ring { position: absolute; border-radius: 50%; border: 2px solid currentColor; opacity: 0.18; }
+.sayo-onb-art__icon {
+  position: relative;
+  border-radius: var(--radius-page);
+  background: var(--color-background-surface);
+  color: var(--color-accent);
+  box-shadow: var(--shadow-med);
+}
+
+/* ---------- mock lock screen ---------- */
+.sayo-lockscreen { border-radius: var(--radius-page); background: var(--sayo-gradient); color: #fff; }
+.sayo-lock-app {
+  flex: none;
+  width: var(--size-element-md);
+  height: var(--size-element-md);
+  border-radius: var(--radius-element);
+  background: #fff;
+}
+
+/* ---------- in-phone dialog scrim (dialogs stay inside the 390×844 frame) ---------- */
+.sayo-phone-scrim { position: absolute; inset: 0; z-index: 40; background: var(--color-overlay); }
