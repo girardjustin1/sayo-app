@@ -1,4 +1,5 @@
 import type { Meta, StoryObj } from '@storybook/react-vite'
+import { assetUrl } from '../../lib/asset'
 import type { ReactNode } from 'react'
 import { Logo, LogoMark, Wordmark } from '../Logo'
 import { Bullets, DocPage, DocSection, DocTitle, Grid, Label, Panel, docMuted } from '../../docs/kit'
@@ -94,12 +95,12 @@ export const Overview: StoryObj = {
         </Panel>
       </DocSection>
 
-      <DocSection title="Files" intro="Served from /brand/ in this Storybook and stored in src/brand/logo/ in the repo.">
+      <DocSection title="Files" intro="Served from brand/ in this Storybook and stored in src/brand/logo/ in the repo.">
         <Grid cols={3} gap={12}>
           {FILES.map((f) => (
-            <a key={f} href={`/brand/${f}`} target="_blank" rel="noreferrer" style={{ textDecoration: 'none', color: 'inherit' }}>
+            <a key={f} href={assetUrl(`/brand/${f}`)} target="_blank" rel="noreferrer" style={{ textDecoration: 'none', color: 'inherit' }}>
               <Panel pad={14} style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
-                <img src={`/brand/${f}`} alt="" style={{ height: 28, maxWidth: 90, background: f.includes('reverse') ? '#2A2D32' : undefined, padding: f.includes('reverse') ? 4 : 0, borderRadius: 4 }} />
+                <img src={assetUrl(`/brand/${f}`)} alt="" style={{ height: 28, maxWidth: 90, background: f.includes('reverse') ? '#2A2D32' : undefined, padding: f.includes('reverse') ? 4 : 0, borderRadius: 4 }} />
                 <span style={{ fontSize: 13, fontFamily: 'ui-monospace, monospace' }}>{f}</span>
               </Panel>
             </a>

@@ -1,4 +1,5 @@
 import type { Meta, StoryObj } from '@storybook/react-vite'
+import { assetUrl } from '../../../lib/asset'
 import { DIRECTIONS } from '../../directions'
 import { IMAGERY } from '../../imagery'
 import { Logo } from '../../Logo'
@@ -16,7 +17,7 @@ function Splash({ id }: { id: 'sister' | 'clear' | 'unmuted' }) {
     <MiniPhone scale={0.5}>
       <DirectionProvider id={id}>
         <div style={{ height: '100%', position: 'relative', background: 'var(--color-background-body)' }}>
-          {hero && <img src={hero.src} alt={hero.alt} style={{ position: 'absolute', inset: 0, width: '100%', height: '62%', objectFit: 'cover' }} />}
+          {hero && <img src={assetUrl(hero.src)} alt={hero.alt} style={{ position: 'absolute', inset: 0, width: '100%', height: '62%', objectFit: 'cover' }} />}
           <div style={{ position: 'absolute', left: 0, right: 0, bottom: 0, height: '48%', background: id === 'unmuted' ? 'var(--sayo-hero)' : 'var(--color-background-body)', borderRadius: '32px 32px 0 0', padding: '32px 28px', color: id === 'unmuted' ? '#fff' : undefined }}>
             <Logo height={34} variant={id === 'unmuted' ? 'reverse' : 'color'} />
             <p className="sayo-display sayo-display--xl" style={{ marginTop: 24, textAlign: "left" }}>{d.copy.tagline}</p>
@@ -54,7 +55,7 @@ export const Preliminary: StoryObj = {
           <Grid cols={IMAGERY[id].length} gap={14}>
             {IMAGERY[id].map((img) => (
               <Panel key={img.src} pad={0} style={{ overflow: 'hidden' }}>
-                <img src={img.src} alt={img.alt} style={{ display: 'block', width: '100%', height: 260, objectFit: img.src.endsWith('.svg') ? 'contain' : 'cover', background: '#F6F3F8' }} />
+                <img src={assetUrl(img.src)} alt={img.alt} style={{ display: 'block', width: '100%', height: 260, objectFit: img.src.endsWith('.svg') ? 'contain' : 'cover', background: '#F6F3F8' }} />
                 <div style={{ padding: 12 }}>
                   <div style={{ fontSize: 13, fontWeight: 700 }}>{img.use}</div>
                   <div style={{ fontSize: 12, color: docMuted, marginTop: 4 }}>{img.ratio} · {img.alt}</div>

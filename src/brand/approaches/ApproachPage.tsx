@@ -1,4 +1,5 @@
 import type { ReactNode } from 'react'
+import { assetUrl } from '../../lib/asset'
 import { DirectionProvider } from '../DirectionContext'
 import { DIRECTIONS, ROUND1_IDS as DIRECTION_IDS, type DirectionId } from '../directions'
 import { Logo } from '../Logo'
@@ -51,7 +52,7 @@ function Pending({ h, label }: { h: number | string; label: string }) {
 
 function Img({ img, h, fit = 'cover', radius = 0 }: { img?: ApproachImage; h: number | string; fit?: 'cover' | 'contain'; radius?: number }) {
   if (!img) return <Pending h={h} label="Image pending" />
-  return <img src={img.src} alt={img.alt} style={{ display: 'block', width: '100%', height: h, objectFit: fit, objectPosition: 'center 30%', borderRadius: radius, background: '#F6F3F8' }} />
+  return <img src={assetUrl(img.src)} alt={img.alt} style={{ display: 'block', width: '100%', height: h, objectFit: fit, objectPosition: 'center 30%', borderRadius: radius, background: '#F6F3F8' }} />
 }
 
 /** Splash screen with the approach's hero for this direction. */
