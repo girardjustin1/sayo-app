@@ -10,7 +10,7 @@ const args = process.argv.slice(2)
 const opt = (k, d) => (args.find((a) => a.startsWith(`--${k}=`)) ?? `--${k}=${d}`).split('=')[1]
 const ids = args.filter((a) => !a.startsWith('--'))
 const dir = opt('dir', 'clay'), port = opt('port', '6030')
-const TAPPABLE = 'button, a, [role="button"], [role="tab"], [role="switch"], [role="radio"], [role="checkbox"], [role="link"], [role="option"], [role="menuitem"], label, summary'
+const TAPPABLE = 'button, a, [role="button"], [role="tab"], [role="switch"], [role="radio"], [role="checkbox"], [role="link"], [role="option"], [role="menuitem"], label, summary, input, textarea, select'
 const browser = await chromium.launch({ executablePath: '/Applications/Google Chrome.app/Contents/MacOS/Google Chrome' })
 const page = await browser.newPage({ viewport: { width: 1340, height: 900 } })
 for (const id of ids) {
@@ -19,8 +19,11 @@ for (const id of ids) {
   const rows = await page.evaluate((sel) => {
     const root = document.querySelector('#storybook-root') ?? document.body
     return [...root.querySelectorAll(sel)].map((el) => {
-      const label = (el.getAttribute('aria-label') || el.innerText || el.textContent || '').replace(/\s+/g, ' ').trim()
-      return `${(el.getAttribute('role') ?? el.tagName.toLowerCase()).padEnd(8)} ${el.disabled || el.getAttribute('aria-disabled') === 'true' ? '(disabled) ' : ''}${label.slice(0, 90)}`
+      const clean = (t) => (t ?? '').replace(/\s+/g, ' ').trim()
+      const field = el.matches('input, textarea, select')
+      const by = el.getAttribute('aria-labelledby')
+      const label = clean(el.getAttribute('aria-label')) || (field ? (by ? clean(by.split(' ').map((id) => document.getElementById(id)?.textContent ?? '').join(' ')) : '') || clean(el.labels?.[0]?.textContent) || clean(el.getAttribute('placeholder')) || clean(el.getAttribute('name')) : clean(el.innerText || el.textContent))
+      return `${(el.getAttribute('role') ?? (field ? `${el.tagName.toLowerCase()}${el.type && el.type !== 'text' && el.type !== 'textarea' ? ':' + el.type : ''}` : el.tagName.toLowerCase())).padEnd(8)} ${el.disabled || el.getAttribute('aria-disabled') === 'true' ? '(disabled) ' : ''}${label.slice(0, 90)}`
     })
   }, TAPPABLE)
   console.log(`\n== ${id} (${rows.length})\n` + rows.map((r) => '  ' + r).join('\n'))

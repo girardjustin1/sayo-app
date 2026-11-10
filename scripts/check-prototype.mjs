@@ -3,7 +3,7 @@
  *  1. Every step of every flow: loads it directly and reports tap rules that match nothing.
  *  2. The main path of every flow: taps the primary glowing control (or waits for an
  *     auto-advance) from the start until the flow reports "done", and prints the path.
- * Usage: node scripts/check-prototype.mjs [flow …] [--url=http://localhost:5340] [--dir=clay]
+ * Usage: node scripts/check-prototype.mjs [flow …] [--url=http://localhost:5340] [--dir=clay] [--prefill=off|on]
  * Needs playwright-core and a local Chrome; `pnpm dev` must be running.
  */
 import { chromium } from 'playwright-core'
@@ -16,7 +16,8 @@ const only = args.filter((a) => !a.startsWith('--'))
 
 const browser = await chromium.launch({ executablePath: '/Applications/Google Chrome.app/Contents/MacOS/Google Chrome' })
 const ctx = await browser.newContext({ viewport: { width: 1440, height: 950 } })
-await ctx.addInitScript((d) => { localStorage.setItem('sayo-proto-direction', d); localStorage.setItem('sayo-proto-hints', 'on') }, dir)
+const prefill = opt('prefill', 'off')
+await ctx.addInitScript(([d, p]) => { localStorage.setItem('sayo-proto-direction', d); localStorage.setItem('sayo-proto-hints', 'on'); localStorage.setItem('sayo-proto-prefill', p) }, [dir, prefill])
 const page = await ctx.newPage()
 const errors = []
 page.on('pageerror', (e) => errors.push(String(e).slice(0, 200)))
@@ -32,18 +33,21 @@ const stepsOf = async (flow) => {
 
 let problems = 0
 const flows = only.length ? only : ['ask', 'circle', 'safety', 'pro', 'admin']
-console.log(`menu shows ${menu} flows; checking ${flows.join(', ')} in ${dir}\n`)
+console.log(`menu shows ${menu} flows; checking ${flows.join(', ')} in ${dir}, prefill ${prefill}\n`)
 
 for (const flow of flows) {
   // 1. main path
   await page.goto(`${url}/#/${flow}`); await page.reload(); await page.waitForTimeout(1000)
-  const path = []; const seen = new Set(); let end = 'stuck'
-  for (let i = 0; i < 80; i++) {
+  const path = []; const left = new Set(); let end = 'stuck'; let same = 0
+  for (let i = 0; i < 160; i++) {
     const s = await state()
-    if (!path.length || path.at(-1) !== s.step) path.push(s.step)
+    if (path.at(-1) !== s.step) {
+      if (path.length) left.add(path.at(-1))
+      if (left.has(s.step)) { path.push(s.step); end = `loop: back at ${s.step}`; break }
+      path.push(s.step); same = 0
+    } else if (++same > 8 && !s.auto) { end = `stuck at ${s.step} (9 taps, no progress)`; break }
     if (s.done) { end = 'done'; break }
-    if (seen.has(s.step) && !s.auto) { end = `loop at ${s.step}`; break }
-    seen.add(s.step)
+    // Fields first (the "Fill in for me" pill is the primary control until they are filled), then the main button.
     if (s.primary) { await page.click('[data-hot-primary]', { force: true }); await page.waitForTimeout(350) }
     else if (s.auto) await page.waitForTimeout(700)
     else { end = `dead end at ${s.step}`; break }

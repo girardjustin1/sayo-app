@@ -20,7 +20,7 @@ import { ReviewResponse } from '../../screens/user/05-reviews/ReviewResponse'
 import { ReviewWaiting } from '../../screens/user/05-reviews/ReviewWaiting'
 import { FindCare } from '../../screens/user/06-care/FindCare'
 import { ServiceDetail } from '../../screens/user/06-care/ServiceDetail'
-import { AutoAdvance, BACK, Finish, Proto, SkipAhead, Tappable, flowTo, toastTo, type AppRule } from '../helpers'
+import { AutoAdvance, BACK, Fill, Finish, Pin, Proto, SkipAhead, Tappable, flowTo, toastTo, type AppRule } from '../helpers'
 import type { Flow, FlowStep } from './types'
 
 const esc = (s: string) => s.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')
@@ -30,7 +30,9 @@ const perDirection = (pick: (c: (typeof DIRECTIONS)[keyof typeof DIRECTIONS]['co
 
 const CTA = perDirection((c) => c.ctaPrimary)
 const SUMMARY_OK = perDirection((c) => c.summaryConfirm)
-const DIGIT = /^[0-9]$/
+/** The Ask composer's placeholder, and its sentence starters (they all end with an ellipsis). */
+const COMPOSER = perDirection((c) => c.askPlaceholder)
+const STARTER = /…$/
 const CALL = toastTo('Would start a phone call')
 const MAPS = toastTo('Would open your maps app')
 const SKIP = 'Skip ahead: a professional replies'
@@ -87,9 +89,12 @@ const steps: FlowStep[] = [
     id: 'privacy',
     title: 'Privacy promise + 18+',
     render: () => (
-      <Proto rules={[{ match: /^Continue$/, to: 'account' }, { match: 'I’m under 18', to: 'under-18', quiet: true }]}>
-        <PrivacyPromise confirmed />
-      </Proto>
+      <Fill
+        fields={['I confirm I am 18 or older']}
+        empty={<PrivacyPromise />}
+        filled={<PrivacyPromise confirmed />}
+        rules={[{ match: /^Continue$/, to: 'account' }, { match: 'I’m under 18', to: 'under-18', quiet: true }]}
+      />
     ),
   },
   {
@@ -105,27 +110,26 @@ const steps: FlowStep[] = [
     id: 'account',
     title: 'Create account',
     render: () => (
-      <Proto rules={[{ match: /^Create account$/, to: 'pin' }]}>
-        <CreateAccount filled method="phone" />
-      </Proto>
+      <Fill
+        fields={['Circle nickname', 'Suggest one', 'Phone number', 'I agree to the Terms', 'I have read the Privacy', 'I understand SAYO is not']}
+        empty={<CreateAccount method="phone" />}
+        filled={<CreateAccount filled method="phone" />}
+        rules={[{ match: /^Create account$/, to: 'pin' }]}
+      />
     ),
   },
   {
     id: 'pin',
     title: 'Create PIN',
     render: () => (
-      <Proto rules={[{ match: DIGIT, to: 'pin-confirm' }]}>
-        <CreatePin stage="create" filled={3} />
-      </Proto>
+<Pin screen={(n) => <CreatePin stage="create" filled={n} />} next="pin-confirm" />
     ),
   },
   {
     id: 'pin-confirm',
     title: 'Confirm PIN',
     render: () => (
-      <Proto rules={[{ match: DIGIT, to: 'notifications' }]}>
-        <CreatePin stage="confirm" filled={3} />
-      </Proto>
+<Pin screen={(n) => <CreatePin stage="confirm" filled={n} />} next="notifications" />
     ),
   },
   {
@@ -193,7 +197,7 @@ const steps: FlowStep[] = [
     id: 'guided-3',
     title: 'Guided start: in her words (side path)',
     render: () => (
-      <Proto rules={[{ match: /^Send$/, to: 'ask-words' }]}>
+      <Proto rules={[{ match: COMPOSER, to: 'ask-words-written' }, { match: STARTER, to: 'ask-words-written', quiet: true }, { match: /^Send$/, to: 'ask-words-written', quiet: true }]}>
         <GuidedStart step={3} />
       </Proto>
     ),
@@ -217,6 +221,13 @@ const steps: FlowStep[] = [
   {
     id: 'ask-words',
     title: 'In her own words',
+    render: () => (
+      <Fill fields={[COMPOSER, STARTER]} empty={<AskFreeText stage="empty" />} filled={<AskFreeText stage="writing" />} rules={[{ match: /^Send$/, to: 'ask-sent-words' }]} />
+    ),
+  },
+  {
+    id: 'ask-words-written',
+    title: 'Her words, written (side path)',
     render: () => (
       <Proto rules={[{ match: /^Send$/, to: 'ask-sent-words' }]}>
         <AskFreeText stage="writing" />
@@ -385,18 +396,14 @@ const steps: FlowStep[] = [
     id: 'unlock',
     title: 'Unlock with PIN',
     render: () => (
-      <Proto rules={[{ match: DIGIT, to: 'home-ready' }, { match: 'Forgot PIN', to: toastTo('See User → 01 Onboarding → Unlock with PIN'), quiet: true }]}>
-        <UnlockPin filled={3} />
-      </Proto>
+<Pin screen={(n) => <UnlockPin filled={n} />} next="home-ready" rules={[{ match: 'Forgot PIN', to: toastTo('See User → 01 Onboarding → Unlock with PIN'), quiet: true }]} />
     ),
   },
   {
     id: 'unlock-returning',
     title: 'Returning user: unlock (side path)',
     render: () => (
-      <Proto rules={[{ match: DIGIT, to: 'home-waiting' }]}>
-        <UnlockPin filled={3} />
-      </Proto>
+<Pin screen={(n) => <UnlockPin filled={n} />} next="home-waiting" />
     ),
   },
   {

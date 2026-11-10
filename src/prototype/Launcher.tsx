@@ -19,7 +19,7 @@ export function Launcher({
 }: {
   onStart: (id: FlowId) => void
   /** Brand and hint controls, shown when there is no side panel (real phones). */
-  controls?: { direction: DirectionId; onDirection: (d: DirectionId) => void; hints: boolean; onHints: (v: boolean) => void }
+  controls?: { direction: DirectionId; onDirection: (d: DirectionId) => void; hints: boolean; onHints: (v: boolean) => void; prefill: boolean; onPrefill: (v: boolean) => void }
 }) {
   return (
     <Screen>
@@ -30,7 +30,7 @@ export function Launcher({
         </HStack>
         <VStack gap={2}>
           <Display size="lg">Try SAYO, start to finish.</Display>
-          <Text color="secondary">Everything is prefilled and fictional. Pick a flow, then tap what glows.</Text>
+          <Text color="secondary">Everything is fictional. Pick a flow, then tap what glows; tap a field to fill it in.</Text>
         </VStack>
         <VStack gap={3}>
           {FLOWS.map((f, i) => (
@@ -56,7 +56,8 @@ export function Launcher({
             <SegmentedControl label="Brand direction" value={controls.direction} onChange={(v) => controls.onDirection(v as DirectionId)} layout="fill">
               {DIRECTION_IDS.map((id) => <SegmentedControlItem key={id} value={id} label={DIRECTIONS[id].name} />)}
             </SegmentedControl>
-            <Switch label="Tap hints" description="Glow on the next prefilled step" value={controls.hints} onChange={controls.onHints} />
+            <Switch label="Prefill fields" description="Off: tap a field to fill it. On: everything arrives filled." value={controls.prefill} onChange={controls.onPrefill} />
+            <Switch label="Tap hints" description="Glow on the next step" value={controls.hints} onChange={controls.onHints} />
           </VStack>
         )}
         <Text type="supporting" justify="center">Sample data only · fictional people and clinics</Text>

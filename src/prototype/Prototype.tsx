@@ -20,17 +20,33 @@ const savedDirection = (): DirectionId => {
   return d && DIRECTION_IDS.includes(d) ? d : 'clay'
 }
 
+export interface PrototypeProps {
+  /**
+   * app: the standalone prototype (hash links, remembers its settings).
+   * storybook: the same shell inside a story; the brand comes from the Direction toolbar.
+   * embedded: the device contents only, inside an existing frame.
+   */
+  mode?: 'app' | 'storybook' | 'embedded'
+  initialFlow?: FlowId
+  initialStep?: string
+  /** storybook mode: the toolbar's direction. */
+  direction?: DirectionId
+}
+
 /**
- * Clickable prototype: a menu of flows, each playable end to end with prefilled,
- * fictional data. Standalone it brings its own device frame, side panel and brand
- * switcher; `embedded` renders inside an existing frame (Storybook), where the
- * toolbar's Direction applies.
+ * Clickable prototype: a menu of flows, each playable end to end with fictional data.
+ * It brings its own device frame and a panel with Jump to, a tap counter, the brand
+ * directions, tap hints and the "Prefill fields" switch.
  */
-export function Prototype({ embedded = false, initialFlow, initialStep }: { embedded?: boolean; initialFlow?: FlowId; initialStep?: string }) {
-  const [route, setRoute] = useState<Route>(() => (embedded ? { flow: initialFlow ?? null, step: initialStep } : parseHash()))
+export function Prototype({ mode = 'app', initialFlow, initialStep, direction: fixedDirection }: PrototypeProps) {
+  const embedded = mode === 'embedded'
+  const app = mode === 'app'
+  const [route, setRoute] = useState<Route>(() => (app ? parseHash() : { flow: initialFlow ?? null, step: initialStep }))
   const [history, setHistory] = useState<string[]>([])
-  const [direction, setDirection] = useState<DirectionId>(() => (embedded ? 'clay' : savedDirection()))
-  const [hints, setHints] = useState(() => embedded || localStorage.getItem('sayo-proto-hints') !== 'off')
+  const [ownDirection, setDirection] = useState<DirectionId>(() => (app ? savedDirection() : 'clay'))
+  const direction = fixedDirection ?? ownDirection
+  const [hints, setHints] = useState(() => !app || localStorage.getItem('sayo-proto-hints') !== 'off')
+  const [prefill, setPrefill] = useState(() => app && localStorage.getItem('sayo-proto-prefill') === 'on')
   const [run, setRun] = useState(0)
   const [taps, setTaps] = useState(0)
   const [startedAt, setStartedAt] = useState<number | null>(null)
@@ -40,17 +56,24 @@ export function Prototype({ embedded = false, initialFlow, initialStep }: { embe
   const wide = useMedia('(min-width: 860px)') && !embedded
 
   useEffect(() => {
-    if (!embedded) localStorage.setItem('sayo-proto-direction', direction)
-  }, [direction, embedded])
+    if (app) localStorage.setItem('sayo-proto-direction', ownDirection)
+  }, [ownDirection, app])
   useEffect(() => {
-    if (!embedded) localStorage.setItem('sayo-proto-hints', hints ? 'on' : 'off')
-  }, [hints, embedded])
+    if (app) localStorage.setItem('sayo-proto-hints', hints ? 'on' : 'off')
+  }, [hints, app])
   useEffect(() => {
-    if (embedded) return
+    if (app) localStorage.setItem('sayo-proto-prefill', prefill ? 'on' : 'off')
+  }, [prefill, app])
+  // Storybook: follow the story's args when they change (e.g. a deep link to a step).
+  useEffect(() => {
+    if (!app) setRoute({ flow: initialFlow ?? null, step: initialStep })
+  }, [app, initialFlow, initialStep])
+  useEffect(() => {
+    if (!app) return
     const on = () => setRoute(parseHash())
     window.addEventListener('hashchange', on)
     return () => window.removeEventListener('hashchange', on)
-  }, [embedded])
+  }, [app])
   // Deep links (e.g. #/ask/ask-summary) start the clock too.
   useEffect(() => {
     if (route.flow && startedAt === null) setStartedAt(Date.now())
@@ -59,9 +82,9 @@ export function Prototype({ embedded = false, initialFlow, initialStep }: { embe
   const navigate = useCallback(
     (r: Route) => {
       setRoute(r)
-      if (!embedded) window.history.replaceState(null, '', toHash(r))
+      if (app) window.history.replaceState(null, '', toHash(r))
     },
-    [embedded],
+    [app],
   )
 
   const flow = FLOWS.find((f) => f.id === route.flow)
@@ -83,6 +106,7 @@ export function Prototype({ embedded = false, initialFlow, initialStep }: { embe
   const api: ProtoApi = useMemo(
     () => ({
       hints,
+      prefill,
       go: (step) => {
         setHistory((h) => (route.step ? [...h, route.step] : h))
         navigate({ flow: route.flow, step })
@@ -108,24 +132,24 @@ export function Prototype({ embedded = false, initialFlow, initialStep }: { embe
         setTimeout(() => setToastMsg(null), 2200)
       },
     }),
-    [hints, history, navigate, route, start],
+    [hints, prefill, history, navigate, route, start],
   )
 
   const secs = startedAt ? Math.round(((finishedAt ?? Date.now()) - startedAt) / 1000) : 0
   const done = !!finishedAt
   const desktop = flow?.device === 'desktop'
-  const controls = { direction, onDirection: setDirection, hints, onHints: setHints }
+  const controls = { direction, onDirection: fixedDirection ? undefined : setDirection, hints, onHints: setHints, prefill, onPrefill: setPrefill }
 
   const screen = flow ? (
-    <div key={`${flow.id}-${run}`} className="proto-fill">{renderStep(flow, route.step ?? flow.start)}</div>
+    <div key={`${flow.id}-${run}-${prefill}`} className="proto-fill">{renderStep(flow, route.step ?? flow.start)}</div>
   ) : (
-    <Launcher onStart={(id) => start(id)} controls={wide || embedded ? undefined : controls} />
+    <Launcher onStart={(id) => start(id)} controls={wide || embedded || !controls.onDirection ? undefined : { ...controls, onDirection: controls.onDirection }} />
   )
 
   const device = (
     <div className="proto-device" data-proto-step={route.step ?? flow?.start ?? ''} data-proto-flow={route.flow ?? ''} data-proto-done={done || undefined}>
       {screen}
-      {flow && !wide && <MiniMenu open={panel} onToggle={() => setPanel((p) => !p)} taps={taps} secs={secs} done={done} hints={hints} onHints={setHints} corner={desktop} />}
+      {flow && !wide && <MiniMenu open={panel} onToggle={() => setPanel((p) => !p)} taps={taps} secs={secs} done={done} hints={hints} onHints={setHints} prefill={prefill} onPrefill={setPrefill} corner={desktop} />}
       {toastMsg && (
         <div className="proto-toast" role="status">
           <span>{toastMsg}</span>
@@ -133,7 +157,7 @@ export function Prototype({ embedded = false, initialFlow, initialStep }: { embe
       )}
     </div>
   )
-  // In Storybook the story decorator already provides the direction.
+  // Embedded: the story decorator already provides the direction.
   const themed = embedded ? device : <DirectionProvider id={direction}>{device}</DirectionProvider>
   const panelProps = { flow, taps, secs, done, step: route.step, onJump: (s: string) => navigate({ flow: route.flow, step: s }), onMenu: api.menu, onRestart: api.restart, ...controls }
 
@@ -142,12 +166,12 @@ export function Prototype({ embedded = false, initialFlow, initialStep }: { embe
       {embedded ? (
         themed
       ) : desktop ? (
-        <div className="proto-page proto-page--desktop">
+        <div className={`proto-page proto-page--desktop${app ? '' : ' proto-page--story'}`}>
           <TopBar {...panelProps} />
           <BrowserFrame>{themed}</BrowserFrame>
         </div>
       ) : wide ? (
-        <div className="proto-page">
+        <div className={`proto-page${app ? '' : ' proto-page--story'}`}>
           <SidePanel {...panelProps} />
           <div className="proto-phone">{themed}</div>
         </div>
@@ -191,12 +215,31 @@ interface PanelProps {
   onMenu: () => void
   onRestart: () => void
   direction: DirectionId
-  onDirection: (d: DirectionId) => void
+  /** Absent in Storybook, where the Direction toolbar decides. */
+  onDirection?: (d: DirectionId) => void
   hints: boolean
   onHints: (v: boolean) => void
+  prefill: boolean
+  onPrefill: (v: boolean) => void
+}
+
+/** The two switches every panel shows. */
+function Switches({ hints, onHints, prefill, onPrefill, short = false }: Pick<PanelProps, 'hints' | 'onHints' | 'prefill' | 'onPrefill'> & { short?: boolean }) {
+  return (
+    <>
+      <label className="proto-check" title="Off: fields start empty and fill when you tap them. On: everything arrives filled.">
+        <input type="checkbox" checked={prefill} onChange={(e) => onPrefill(e.target.checked)} /> {short ? 'Prefill' : 'Prefill fields'}
+        {!short && <span className="proto-check__hint">{prefill ? 'Fields arrive filled' : 'Tap a field to fill it'}</span>}
+      </label>
+      <label className="proto-check">
+        <input type="checkbox" checked={hints} onChange={(e) => onHints(e.target.checked)} /> {short ? 'Hints' : 'Show tap hints'}
+      </label>
+    </>
+  )
 }
 
 function DirectionPills({ direction, onDirection }: Pick<PanelProps, 'direction' | 'onDirection'>) {
+  if (!onDirection) return <p className="proto-foot">{DIRECTIONS[direction].letter} · {DIRECTIONS[direction].name}. Change it with the Direction toolbar above.</p>
   return (
     <div className="proto-pills">
       {DIRECTION_IDS.map((id) => (
@@ -218,7 +261,7 @@ function Stat({ label, value }: { label: string; value: ReactNode }) {
 }
 
 /** Beside the phone on wide screens. */
-function SidePanel({ flow, taps, secs, done, step, onJump, onMenu, onRestart, direction, onDirection, hints, onHints }: PanelProps) {
+function SidePanel({ flow, taps, secs, done, step, onJump, onMenu, onRestart, direction, onDirection, hints, onHints, prefill, onPrefill }: PanelProps) {
   useTick(!!flow && !done)
   return (
     <aside className="proto-side">
@@ -258,16 +301,16 @@ function SidePanel({ flow, taps, secs, done, step, onJump, onMenu, onRestart, di
         <div className="proto-label">Brand direction</div>
         <DirectionPills direction={direction} onDirection={onDirection} />
       </div>
-      <label className="proto-check">
-        <input type="checkbox" checked={hints} onChange={(e) => onHints(e.target.checked)} /> Show tap hints
-      </label>
+      <div className="proto-switches">
+        <Switches hints={hints} onHints={onHints} prefill={prefill} onPrefill={onPrefill} />
+      </div>
       <p className="proto-foot">Sample data only. On a phone, open this page for the full-screen version.</p>
     </aside>
   )
 }
 
 /** Above the browser frame for the desktop flows. */
-function TopBar({ flow, taps, secs, done, step, onJump, onMenu, onRestart, direction, onDirection, hints, onHints }: PanelProps) {
+function TopBar({ flow, taps, secs, done, step, onJump, onMenu, onRestart, direction, onDirection, hints, onHints, prefill, onPrefill }: PanelProps) {
   useTick(!!flow && !done)
   if (!flow) return null
   return (
@@ -285,10 +328,8 @@ function TopBar({ flow, taps, secs, done, step, onJump, onMenu, onRestart, direc
           {flow.steps.map((s) => <option key={s.id} value={s.id}>{s.title}</option>)}
         </select>
       </label>
-      <DirectionPills direction={direction} onDirection={onDirection} />
-      <label className="proto-check">
-        <input type="checkbox" checked={hints} onChange={(e) => onHints(e.target.checked)} /> Hints
-      </label>
+      {onDirection && <DirectionPills direction={direction} onDirection={onDirection} />}
+      <Switches hints={hints} onHints={onHints} prefill={prefill} onPrefill={onPrefill} short />
     </header>
   )
 }
@@ -316,7 +357,7 @@ function BrowserFrame({ children }: { children: ReactNode }) {
 }
 
 /** Phone-size control: a small pill that opens a menu. */
-function MiniMenu({ open, onToggle, taps, secs, done, hints, onHints, corner }: { open: boolean; onToggle: () => void; taps: number; secs: number; done: boolean; hints: boolean; onHints: (v: boolean) => void; corner?: boolean }) {
+function MiniMenu({ open, onToggle, taps, secs, done, hints, onHints, prefill, onPrefill, corner }: { open: boolean; onToggle: () => void; taps: number; secs: number; done: boolean; hints: boolean; onHints: (v: boolean) => void; prefill: boolean; onPrefill: (v: boolean) => void; corner?: boolean }) {
   return (
     <ProtoCtx.Consumer>
       {(api) => (
@@ -330,9 +371,7 @@ function MiniMenu({ open, onToggle, taps, secs, done, hints, onHints, corner }: 
                 <div className="proto-text">{taps} taps · {clock(secs)}{done ? ' · end of this flow' : ''}</div>
                 <button type="button" className="proto-btn proto-btn--solid" onClick={api.menu}>Back to menu</button>
                 <button type="button" className="proto-btn" onClick={api.restart}>Restart this flow</button>
-                <label className="proto-check">
-                  <input type="checkbox" checked={hints} onChange={(e) => onHints(e.target.checked)} /> Show tap hints
-                </label>
+                <Switches hints={hints} onHints={onHints} prefill={prefill} onPrefill={onPrefill} />
               </div>
             </div>
           )}

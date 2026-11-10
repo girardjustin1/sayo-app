@@ -15,6 +15,8 @@ export type ProtoApi = {
   finish: () => void
   toast: (msg: string) => void
   hints: boolean
+  /** true: fields arrive filled. false: they start empty and fill when tapped. */
+  prefill: boolean
 }
 
 export const ProtoCtx = createContext<ProtoApi>({
@@ -27,6 +29,7 @@ export const ProtoCtx = createContext<ProtoApi>({
   finish: () => {},
   toast: () => {},
   hints: true,
+  prefill: true,
 })
 
 export const useProto = () => useContext(ProtoCtx)

@@ -18,7 +18,7 @@ import { PostDetail } from '../screens/user/07-circle/PostDetail'
 import { CaseQueue } from '../screens/pro/CaseQueue'
 import { Overview } from '../screens/admin/Overview'
 import { protoUrl, setDocsDirection, useDocsDirection } from './docsDirection'
-import { MiniPhone } from './kit'
+import { MiniBrowser, MiniPhone } from './kit'
 
 /**
  * Start Here blocks about the clickable prototype and what was built. Screens are
@@ -34,7 +34,7 @@ const font = "'DM Sans Variable', system-ui, sans-serif"
 const story = (id: string) => `./?path=/story/${id}`
 
 /** Previews must not glow, navigate or count taps. */
-const STILL: ProtoApi = { go: () => {}, back: () => {}, startFlow: () => {}, menu: () => {}, restart: () => {}, tap: () => {}, finish: () => {}, toast: () => {}, hints: false }
+const STILL: ProtoApi = { go: () => {}, back: () => {}, startFlow: () => {}, menu: () => {}, restart: () => {}, tap: () => {}, finish: () => {}, toast: () => {}, hints: false, prefill: true }
 
 function Live({ children }: { children: ReactNode }) {
   const dir = useDocsDirection()
@@ -44,20 +44,6 @@ function Live({ children }: { children: ReactNode }) {
         <div style={{ height: '100%', pointerEvents: 'none' }} aria-hidden>{children}</div>
       </DirectionProvider>
     </ProtoCtx.Provider>
-  )
-}
-
-/** A 1280 × 820 browser window scaled down, for the desktop tools. */
-function MiniBrowser({ children, scale = 0.3 }: { children: ReactNode; scale?: number }) {
-  return (
-    <div style={{ width: 1280 * scale, height: 856 * scale, flex: 'none' }}>
-      <div style={{ width: 1280, height: 856, transform: `scale(${scale})`, transformOrigin: 'top left', borderRadius: 12, overflow: 'hidden', background: '#fff', boxShadow: '0 16px 40px rgb(0 0 0 / 0.16)' }}>
-        <div style={{ height: 36, background: '#F4F3F6', borderBottom: '1px solid #E4E2E8', display: 'flex', alignItems: 'center', gap: 6, padding: '0 14px' }}>
-          {[0, 1, 2].map((i) => <span key={i} style={{ width: 11, height: 11, borderRadius: '50%', background: '#D8D5DE' }} />)}
-        </div>
-        <div style={{ height: 820 }}>{children}</div>
-      </div>
-    </div>
   )
 }
 

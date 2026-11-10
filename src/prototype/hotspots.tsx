@@ -16,35 +16,56 @@ export type Rule = {
   to: string | (() => void)
   /** No hint ring (a secondary route). */
   quiet?: boolean
+  /** A calm, still outline instead of the pulsing ring (fields waiting to be filled). */
+  soft?: boolean
 }
 
 export const TAPPABLE =
-  'button, a, [role="button"], [role="tab"], [role="switch"], [role="radio"], [role="checkbox"], [role="link"], [role="option"], [role="menuitem"], label, summary'
+  'button, a, [role="button"], [role="tab"], [role="switch"], [role="radio"], [role="checkbox"], [role="link"], [role="option"], [role="menuitem"], label, summary, input, textarea, select'
 
-export const labelOf = (el: Element) => (el.getAttribute('aria-label') || (el as HTMLElement).innerText || el.textContent || '').replace(/\s+/g, ' ').trim()
+const clean = (s: string | null | undefined) => (s ?? '').replace(/\s+/g, ' ').trim()
+
+/** The name a rule matches: aria-label, else visible text; form fields use their label, then placeholder. */
+export const labelOf = (el: Element) => {
+  const aria = clean(el.getAttribute('aria-label'))
+  if (aria) return aria
+  if (el instanceof HTMLInputElement || el instanceof HTMLTextAreaElement || el instanceof HTMLSelectElement) {
+    const by = el.getAttribute('aria-labelledby')
+    const named = by ? clean(by.split(' ').map((id) => document.getElementById(id)?.textContent ?? '').join(' ')) : ''
+    return named || clean(el.labels?.[0]?.textContent) || clean(el.getAttribute('placeholder')) || clean(el.getAttribute('name'))
+  }
+  return clean((el as HTMLElement).innerText || el.textContent)
+}
 
 const hit = (m: string | RegExp, label: string) => (typeof m === 'string' ? label.toLowerCase().includes(m.toLowerCase()) : m.test(label))
 
 function useHighlight(ref: React.RefObject<HTMLElement | null>, rules: Rule[], enabled: boolean) {
-  const key = rules.map((r) => `${r.match}${r.quiet ? '~' : ''}`).join('|')
+  const key = rules.map((r) => `${r.match}${r.quiet ? '~' : ''}${r.soft ? '+' : ''}`).join('|')
   useLayoutEffect(() => {
     const root = ref.current
     if (!root) return
     const paint = () => {
       root.querySelectorAll('[data-hot-auto]').forEach((el) => el.removeAttribute('data-hot-auto'))
       root.querySelectorAll('[data-hot-primary]').forEach((el) => el.removeAttribute('data-hot-primary'))
-      const tappables = [...root.querySelectorAll(TAPPABLE)].filter((el) => !(el as HTMLButtonElement).disabled && el.getAttribute('aria-disabled') !== 'true')
+      root.querySelectorAll('[data-hot-soft]').forEach((el) => el.removeAttribute('data-hot-soft'))
+      const all = [...root.querySelectorAll(TAPPABLE)]
+      const off = (el: Element) => (el as HTMLButtonElement).disabled || el.getAttribute('aria-disabled') === 'true'
       const unmatched: string[] = []
       rules.forEach((rule, i) => {
-        // The innermost matching element, first in the document.
-        const el = tappables.find((t) => {
+        // The innermost matching element, first in the document. A disabled match still counts as
+        // "exists" (e.g. Continue before the form is filled) but never glows.
+        const matches = all.filter((t) => {
           const label = labelOf(t)
           if (!hit(rule.match, label)) return false
           return ![...t.querySelectorAll(TAPPABLE)].some((c) => labelOf(c) === label)
         })
-        if (!el) return void unmatched.push(String(rule.match))
+        if (!matches.length) return void unmatched.push(String(rule.match))
+        // Ring the field itself, not its label text.
+        const live = matches.filter((m) => !off(m))
+        const el = live.find((m) => m.matches('input, textarea, select')) ?? live[0]
+        if (!el) return
         if (i === 0) el.setAttribute('data-hot-primary', '')
-        if (!rule.quiet && enabled) el.setAttribute('data-hot-auto', '')
+        if (!rule.quiet && enabled) el.setAttribute(rule.soft ? 'data-hot-soft' : 'data-hot-auto', '')
       })
       // Read by scripts/check-prototype.mjs: a rule that matches nothing is a dead end.
       if (unmatched.length) root.setAttribute('data-proto-unmatched', unmatched.join(' | '))

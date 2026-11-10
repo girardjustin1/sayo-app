@@ -87,6 +87,7 @@ const preview: Preview = {
         order: [
           'Start Here',
           'Prototype',
+          ['Click-through', 'Flow maps'],
           'Brand',
           ['Logo', 'Round 2 (current)', ['About this round', 'Directions & tokens', 'Imagery', 'Landing page'], 'Round 1 (pink)', ['About this round', 'Directions & tokens', 'Imagery 1 (first pass)', 'Imagery 2 (six approaches)']],
           'Components',
