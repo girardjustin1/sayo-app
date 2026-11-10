@@ -521,6 +521,7 @@ export const askFlow: Flow = {
   who: 'Young woman',
   device: 'phone',
   start: 'splash',
+  cover: 'ask-summary',
   steps,
   tests: ['Does she understand what is AI and what is a professional?', 'Would she send it for review?', 'Is the next step clear at the end?'],
 }

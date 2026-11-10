@@ -18,6 +18,8 @@ export interface Flow {
   who: 'Young woman' | 'Verified professional' | 'Admin'
   device: 'phone' | 'desktop'
   start: string
+  /** Step shown as this flow's preview on cards (defaults to `start`). */
+  cover?: string
   steps: FlowStep[]
   /** What this prototype is meant to test with real people. */
   tests: string[]

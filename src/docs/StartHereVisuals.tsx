@@ -42,6 +42,7 @@ export function Hero() {
           </p>
           <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6 }}>
             <Pill>{DIRECTION_IDS.length} brand directions</Pill>
+            <Pill>5 clickable flows</Pill>
             <Pill>User app · Professional · Admin</Pill>
             <Pill>Built on Astryx</Pill>
             <Pill>Sample data only</Pill>
