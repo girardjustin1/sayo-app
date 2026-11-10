@@ -1,0 +1,7 @@
+import { Meta, Markdown } from '@storybook/addon-docs/blocks'
+import { fixLinks } from './links'
+import md from '../../../docs/research/safety-gbv.md?raw'
+
+<Meta title="Research/06 Safety & GBV" />
+
+<Markdown>{fixLinks(md)}</Markdown>

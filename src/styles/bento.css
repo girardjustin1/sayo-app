@@ -1,0 +1,66 @@
+/*
+ * Bento tiles (Home bento, Learn) and the splash hero: the places SAYO's words meet a
+ * photo. Astryx has no media-overlay component, so the tile clip and the scrim live here.
+ * Spacing is Astryx tokens; colours are tokens only (no direction hex).
+ *
+ * The scrim is the direction's own accent, deepened: forest in Grove, navy in Ink, brick
+ * in Clay, charcoal in Quiet. Under the text it is at least 90% opaque, so on-dark text
+ * clears 4.5:1 on any photo, and on the pale fallback panel shown before imagery lands.
+ */
+.bento-tile, .bento-hero { --bento-ink: color-mix(in srgb, var(--color-accent) 70%, black); }
+.bento-tile {
+  position: relative;
+  overflow: hidden; /* clips the media to the card radius */
+}
+.bento-cover { position: relative; }
+.bento-scrim {
+  --bento-fade: calc(var(--spacing-8) * 2);
+  position: absolute;
+  inset-inline: 0;
+  inset-block-end: 0;
+  padding: var(--bento-fade) var(--spacing-4) var(--spacing-4);
+  color: var(--color-on-dark, #fff);
+  /* Solid behind the words, then an eased fade into the photo (no hard band). */
+  background: linear-gradient(
+    to top,
+    var(--bento-ink) 0%,
+    color-mix(in srgb, var(--bento-ink) 90%, transparent) calc(100% - var(--bento-fade)),
+    color-mix(in srgb, var(--bento-ink) 62%, transparent) calc(100% - var(--bento-fade) * 0.66),
+    color-mix(in srgb, var(--bento-ink) 26%, transparent) calc(100% - var(--bento-fade) * 0.33),
+    transparent 100%
+  );
+}
+/* Half-width tiles: a shorter fade, so more of a small photo shows. */
+.bento-scrim--sm { --bento-fade: var(--spacing-10); }
+/* A status flag pinned to the tile's top corner, over the photo. */
+.bento-flag { position: absolute; inset-block-start: var(--spacing-3); inset-inline-start: var(--spacing-3); }
+/* Horizontal tile on the direction's soft panel colour. */
+.bento-soft { background: var(--sayo-soft); }
+
+/* Media that fills the side of a horizontal tile. */
+.bento-side { flex: none; align-self: stretch; }
+
+/*
+ * Splash (round 2): the hero image runs full-bleed from the top edge and takes the space
+ * the sheet leaves; the sheet holds the words and is never shorter than 42% of the screen,
+ * so the image is about 58% on the launch moment. Its top corners use the page radius.
+ */
+.bento-hero { position: relative; flex: 1 1 0; min-block-size: 0; }
+/* A soft shade behind the status bar, so the clock reads in white on any photo. */
+.bento-hero::before {
+  content: '';
+  position: absolute;
+  inset: 0 0 auto;
+  block-size: calc(var(--spacing-10) * 3);
+  background: linear-gradient(to bottom, color-mix(in srgb, var(--bento-ink) 62%, transparent), transparent);
+}
+.bento-sheet {
+  position: relative;
+  flex: none;
+  box-sizing: border-box;
+  min-block-size: calc(42% + var(--radius-page));
+  margin-block-start: calc(-1 * var(--radius-page));
+  border-start-start-radius: var(--radius-page);
+  border-start-end-radius: var(--radius-page);
+  background-color: var(--color-background-body);
+}

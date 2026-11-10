@@ -1,0 +1,7 @@
+import { Meta, Markdown } from '@storybook/addon-docs/blocks'
+import { fixLinks } from './links'
+import md from '../../../docs/research/circle-community.md?raw'
+
+<Meta title="Research/05 Circle" />
+
+<Markdown>{fixLinks(md)}</Markdown>

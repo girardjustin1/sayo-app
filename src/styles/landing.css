@@ -1,0 +1,341 @@
+/*
+ * Landing page layout (Brand / Round 2 / Landing page). Page structure only: bands,
+ * grids, image frames and scrims, which Astryx has no component for. Surfaces, controls
+ * and text are Astryx components. Colour comes from Astryx tokens (--color-*) or the
+ * direction's --sayo-* tokens; spacing from --spacing-*. No direction hex here.
+ *
+ * Per-direction structure switches on [data-direction] (set by DirectionProvider) and
+ * on .ld[data-tiles]. Responsive rules are container queries on .ld, so the 390px story
+ * column behaves like a phone whatever the window width.
+ */
+.ld {
+  container: ld / inline-size;
+  min-height: 100vh;
+  background: var(--color-background-body);
+  color: var(--color-text-primary);
+}
+.ld-page {
+  --ld-max: 75rem;
+  --ld-gutter: var(--spacing-10);
+  --ld-section: calc(var(--spacing-12) * 2);
+  --ld-gap: var(--spacing-6);
+  --ld-radius: var(--radius-container);
+  --ld-radius-lg: var(--radius-page);
+  overflow-x: clip;
+}
+[data-direction='ink'] .ld-page { --ld-radius: var(--radius-inner); --ld-radius-lg: var(--radius-inner); }
+[data-direction='grove'] .ld-page { --ld-radius: var(--sayo-card-radius); }
+
+.ld-wrap {
+  width: 100%;
+  max-width: calc(var(--ld-max) + var(--ld-gutter) * 2);
+  margin-inline: auto;
+  padding-inline: var(--ld-gutter);
+}
+/* Bands share the gap between them: half a section each side. Filled bands keep a full section inside. */
+.ld-band { padding-block: calc(var(--ld-section) / 2); }
+.ld-top + .ld-band { padding-block-start: var(--ld-section); }
+.ld-privacy { padding-block: var(--ld-section); margin-block-start: calc(var(--ld-section) / 2); }
+[data-direction='clay'] .ld-start,
+[data-direction='clay'] .ld-learn { padding-block: var(--ld-section); margin-block: calc(var(--ld-section) / 2); }
+
+/* Image frames: the R2Img (or its fallback panel) fills the frame. */
+.ld-hero__media, .ld-tile__media, .ld-topic__media, .ld-close__media { position: relative; overflow: hidden; }
+.ld-hero__media > *, .ld-tile__media > *, .ld-topic__media > *, .ld-close__media > * { position: absolute; inset: 0; }
+
+/* ---------- display type at page scale ---------- */
+.ld .sayo-display--xl { font-size: clamp(var(--font-size-3xl), 4.2cqi, calc(var(--font-size-5xl) * 1.15)); }
+.ld .ld-hero__title .sayo-display { font-size: clamp(var(--font-size-5xl), 6cqi, calc(var(--font-size-5xl) * 1.7)); }
+[data-direction='ink'] .ld .ld-hero__title .sayo-display { font-size: clamp(var(--font-size-5xl), 7.2cqi, calc(var(--font-size-5xl) * 2.05)); }
+[data-direction='quiet'] .ld .ld-hero__title .sayo-display { font-size: clamp(var(--font-size-4xl), 5cqi, calc(var(--font-size-5xl) * 1.35)); }
+[data-direction='quiet'] .ld .sayo-display--xl { font-size: clamp(var(--font-size-2xl), 3.2cqi, var(--font-size-4xl)); }
+
+.ld-head { max-width: 44rem; margin-block-end: var(--spacing-10); }
+.ld .ld-kicker { text-transform: uppercase; letter-spacing: 0.08em; }
+[data-direction='clay'] .ld-head { margin-inline: auto; align-items: center; }
+[data-direction='clay'] .ld-head > * { text-align: center; }
+[data-direction='ink'] .ld-head { max-width: none; border-block-start: 1px solid var(--color-text-primary); padding-block-start: var(--spacing-5); }
+[data-direction='ink'] .ld-head > * { max-width: 44rem; }
+
+/* ---------- 1. top bar ---------- */
+.ld-bar {
+  display: flex; align-items: center; justify-content: space-between; gap: var(--spacing-4);
+  max-width: calc(var(--ld-max) + var(--ld-gutter) * 2);
+  margin-inline: auto;
+  padding: var(--spacing-5) var(--ld-gutter);
+}
+.ld-nav { display: flex; flex-wrap: wrap; gap: var(--spacing-2) var(--spacing-6); }
+.ld-nav__link { color: inherit; text-decoration: none; }
+.ld-nav__link:hover, .ld-nav__link:focus-visible { text-decoration: underline; text-underline-offset: 0.3em; }
+[data-direction='ink'] .ld-bar { border-block-end: 1px solid var(--color-border); }
+
+/* ---------- 2. hero ---------- */
+.ld-hero {
+  display: grid;
+  grid-template-columns: minmax(var(--ld-gutter), 1fr) minmax(0, calc(var(--ld-max) * 0.54)) minmax(0, calc(var(--ld-max) * 0.46)) minmax(var(--ld-gutter), 1fr);
+  align-items: center;
+  padding-block: var(--spacing-8) var(--spacing-12);
+}
+.ld-hero__copy { grid-column: 2; padding-inline-end: var(--spacing-12); }
+.ld-hero__media { grid-column: 3; align-self: stretch; min-height: 36rem; border-radius: var(--ld-radius-lg); }
+.ld-hero__line { max-width: 32rem; }
+/* Marketing-size main buttons (Astryx lg is desktop-app density). */
+.ld-hero__cta, .ld-close__panel { --size-element-lg: var(--spacing-12); }
+.ld-trust { list-style: none; margin: 0; padding: 0; display: flex; flex-wrap: wrap; gap: var(--spacing-3) var(--spacing-6); }
+.ld-trust li { display: flex; align-items: center; gap: var(--spacing-2); }
+
+/* Grove: the Hers move. One deep forest panel on a white page, lime button, glowing logo. */
+[data-direction='grove'] .ld-top { margin: var(--spacing-3); border-radius: var(--ld-radius-lg); overflow: hidden; }
+[data-direction='grove'] .ld-trust__icon { color: var(--sayo-emphasis-on-dark); }
+
+/* Clay: the AskTia move. Cream bar, then a sand band with the photograph flush to the edge. */
+[data-direction='clay'] .ld-hero { background: var(--sayo-soft); padding-block: 0; }
+[data-direction='clay'] .ld-hero__copy { padding-block: var(--spacing-12); }
+[data-direction='clay'] .ld-hero__media { grid-column: 3 / -1; border-radius: 0; min-height: 40rem; }
+[data-direction='clay'] .ld-trust { flex-direction: column; order: 1; }
+[data-direction='clay'] .ld-hero__cta { order: 2; }
+[data-direction='clay'] .ld-trust__icon { color: var(--sayo-soft-ink); }
+
+/* Ink: editorial. Hairlines, a large serif headline, one coral mark. */
+[data-direction='ink'] .ld-hero { padding-block-start: var(--spacing-12); }
+[data-direction='ink'] .ld-hero .ld-kicker::before {
+  content: ''; display: inline-block; vertical-align: middle;
+  inline-size: var(--spacing-8); block-size: 2px; margin-inline-end: var(--spacing-3);
+  background: var(--sayo-highlight);
+}
+[data-direction='ink'] .ld-trust { border-block-start: 1px solid var(--color-border); padding-block-start: var(--spacing-5); }
+
+/* Quiet: centred words first. The image is a calm strip below, not a portrait. */
+[data-direction='quiet'] .ld-hero { grid-template-columns: minmax(var(--ld-gutter), 1fr) minmax(0, var(--ld-max)) minmax(var(--ld-gutter), 1fr); row-gap: var(--spacing-12); }
+[data-direction='quiet'] .ld-hero__copy { grid-column: 2; max-width: 44rem; margin-inline: auto; padding-inline-end: 0; align-items: center; }
+[data-direction='quiet'] .ld-hero__text { align-items: center; }
+[data-direction='quiet'] .ld-hero__text > *, [data-direction='quiet'] .ld-hero__title > * { text-align: center; }
+[data-direction='quiet'] .ld-hero__cta, [data-direction='quiet'] .ld-trust { justify-content: center; }
+[data-direction='quiet'] .ld-hero__media { grid-column: 2; min-height: 0; block-size: 18rem; }
+
+/* ---------- 3. pillars ---------- */
+.ld-tiles { display: grid; gap: var(--ld-gap); }
+.ld .ld-tile { position: relative; overflow: hidden; display: flex; flex-direction: column; text-align: start; }
+.ld-tile__body { padding: var(--spacing-5); }
+.ld-tile__body > * { max-width: 32rem; }
+.ld-tile__arrow { display: none; }
+
+/* overlay (Grove): bento tiles, text on the photograph over a forest scrim. */
+.ld[data-tiles='overlay'] .ld-tiles { grid-template-columns: repeat(12, minmax(0, 1fr)); grid-auto-rows: 23rem; }
+.ld[data-tiles='overlay'] .ld-tile { border: 0; background: var(--color-accent); color: var(--color-on-accent); }
+.ld[data-tiles='overlay'] .ld-tile--ask, .ld[data-tiles='overlay'] .ld-tile--circle { grid-column: span 7; }
+.ld[data-tiles='overlay'] .ld-tile--review, .ld[data-tiles='overlay'] .ld-tile--care { grid-column: span 5; }
+.ld[data-tiles='overlay'] .ld-tile__media { position: absolute; inset: 0; }
+.ld[data-tiles='overlay'] .ld-tile__body {
+  position: absolute; inset-inline: 0; inset-block-end: 0;
+  padding: calc(var(--spacing-12) * 1.5) var(--spacing-6) var(--spacing-6);
+  background: linear-gradient(to top,
+    color-mix(in srgb, var(--color-accent) 96%, transparent) 0%,
+    color-mix(in srgb, var(--color-accent) 84%, transparent) 62%,
+    transparent 100%);
+}
+.ld[data-tiles='overlay'] .ld-tile__arrow {
+  position: absolute; inset-block-start: var(--spacing-5); inset-inline-end: var(--spacing-5);
+  display: grid; place-items: center;
+  inline-size: var(--size-element-md); block-size: var(--size-element-md);
+  border-radius: var(--radius-full);
+  background: var(--sayo-highlight); color: var(--color-accent);
+}
+
+/* stacked (Clay): photograph above, words below. */
+.ld[data-tiles='stacked'] .ld-tiles { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+.ld[data-tiles='stacked'] .ld-tile__media { aspect-ratio: 4 / 3; }
+
+/* index (Ink): numbered editorial rows with a small plate. */
+.ld[data-tiles='index'] .ld-tiles { gap: 0; }
+.ld[data-tiles='index'] .ld-tile {
+  display: grid; grid-template-columns: 4.5rem minmax(0, 1fr) 15rem; align-items: start; column-gap: var(--spacing-8);
+  padding-block: var(--spacing-6);
+  border: 0; border-block-end: 1px solid var(--color-border); border-radius: 0; background: transparent;
+}
+.ld[data-tiles='index'] .ld-tile__num { order: 1; color: var(--color-text-secondary); }
+/* Title on the left, what it is (and is not) on the right, like a contents page. */
+.ld[data-tiles='index'] .ld-tile__body {
+  order: 2; padding: 0;
+  display: grid; grid-template-columns: minmax(0, 5fr) minmax(0, 6fr); column-gap: var(--spacing-8); row-gap: var(--spacing-1); align-content: start;
+}
+.ld[data-tiles='index'] .ld-tile__body > * { grid-column: 2; max-width: none; }
+.ld[data-tiles='index'] .ld-tile__source { grid-column: 1; grid-row: 1; }
+.ld[data-tiles='index'] .ld-tile__title { grid-column: 1; grid-row: 2; }
+.ld[data-tiles='index'] .ld-tile__line { grid-row: 2; }
+.ld[data-tiles='index'] .ld-tile__not { grid-row: 3; }
+.ld[data-tiles='index'] .ld-tile__media { order: 3; aspect-ratio: 4 / 3; border-radius: var(--ld-radius); }
+
+/* plain (Quiet): no imagery. */
+.ld[data-tiles='plain'] .ld-tiles { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+
+/* ---------- 4. guided entry ---------- */
+.ld-start__panel { display: grid; grid-template-columns: minmax(0, 5fr) minmax(0, 6fr); gap: var(--spacing-12); align-items: center; }
+.ld-rows { display: grid; gap: var(--spacing-3); }
+.ld .ld-row { text-align: start; }
+.ld-start__safety { margin-block-start: var(--spacing-2); max-width: 30rem; }
+
+[data-direction='clay'] .ld-start { background: var(--sayo-soft); }
+[data-direction='grove'] .ld-start__panel {
+  grid-template-columns: minmax(0, 4fr) minmax(0, 7fr);
+  padding: var(--spacing-12);
+  background: var(--sayo-soft); border-radius: var(--ld-radius-lg);
+}
+[data-direction='grove'] .ld-rows { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+[data-direction='grove'] .ld .ld-row { border: 0; }
+[data-direction='ink'] .ld-rows { gap: 0; border-block-start: 1px solid var(--color-text-primary); }
+[data-direction='ink'] .ld .ld-row { border: 0; border-block-end: 1px solid var(--color-border); border-radius: 0; background: transparent; }
+[data-direction='ink'] .ld-start__panel { align-items: start; }
+
+/* ---------- 5. how it works ---------- */
+.ld-how__grid { display: grid; grid-template-columns: minmax(0, 5fr) minmax(0, 6fr); gap: var(--spacing-12); align-items: center; }
+.ld-how__grid .ld-head { margin-block-end: 0; }
+.ld-steps { list-style: none; margin: 0; padding: 0; display: grid; gap: var(--spacing-6); }
+.ld-step { display: grid; grid-template-columns: var(--spacing-12) minmax(0, 1fr); column-gap: var(--spacing-4); align-items: start; }
+.ld-step__num { color: var(--sayo-soft-ink); }
+[data-direction='grove'] .ld-step__num {
+  display: grid; place-items: center;
+  inline-size: var(--spacing-12); block-size: var(--spacing-12);
+  border-radius: var(--radius-full);
+  background: var(--sayo-soft); color: var(--color-accent);
+}
+[data-direction='ink'] .ld-step { border-block-start: 1px solid var(--color-border); padding-block-start: var(--spacing-5); }
+[data-direction='ink'] .ld-steps { gap: var(--spacing-5); }
+[data-direction='quiet'] .ld-step__num { color: var(--color-text-secondary); }
+[data-direction='clay'] .ld-how__grid .ld-head { margin-inline: 0; align-items: stretch; }
+[data-direction='clay'] .ld-how__grid .ld-head > * { text-align: start; }
+
+.ld-stage {
+  display: flex; justify-content: center; align-items: flex-start; gap: var(--spacing-8);
+  padding: var(--spacing-12) var(--spacing-8) calc(var(--spacing-12) * 1.5);
+  background: var(--sayo-hero); border-radius: var(--ld-radius-lg);
+  overflow: hidden;
+}
+.ld-stage__phone--second { margin-block-start: var(--spacing-12); }
+
+/* ---------- 6. learn ---------- */
+.ld-topics { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: var(--ld-gap); }
+.ld .ld-topic { overflow: hidden; display: flex; flex-direction: column; text-align: start; }
+.ld-topic__media { aspect-ratio: 3 / 2; flex: none; }
+.ld-topic__body { padding: var(--spacing-5); }
+.ld-topic__more { margin-block-start: var(--spacing-2); color: var(--color-accent); }
+.ld .ld-note { display: block; margin-block-start: var(--spacing-6); }
+
+[data-direction='clay'] .ld-learn { background: var(--sayo-soft); }
+[data-direction='clay'] .ld .ld-note { text-align: center; }
+[data-direction='ink'] .ld .ld-topic { border: 0; border-radius: 0; background: transparent; }
+[data-direction='ink'] .ld-topic__media { border-radius: var(--ld-radius); }
+[data-direction='ink'] .ld-topic__body { padding-inline: 0; }
+[data-direction='quiet'] .ld .ld-topic { flex-direction: row; align-items: center; }
+[data-direction='quiet'] .ld-topic__media { inline-size: 5.5rem; aspect-ratio: 1; margin-inline-start: var(--spacing-5); border-radius: var(--radius-element); }
+
+/* ---------- 7. professionals ---------- */
+.ld-pros__grid { display: grid; grid-template-columns: minmax(0, 5fr) minmax(0, 7fr); gap: var(--spacing-12); align-items: start; }
+.ld-pros__grid .ld-head { margin-block-end: 0; }
+.ld-pros__grid .ld-note { margin-block-start: 0; }
+.ld-pros__list { list-style: none; margin: 0; padding: 0; }
+.ld-pro { padding: var(--spacing-5); }
+.ld-pro + .ld-pro { border-block-start: 1px solid var(--color-border); }
+[data-direction='clay'] .ld-pros__grid .ld-head { margin-inline: 0; align-items: stretch; }
+[data-direction='clay'] .ld-pros__grid .ld-head > *, [data-direction='clay'] .ld-pros__grid .ld-note { text-align: start; }
+
+/* ---------- 8. privacy ---------- */
+.ld-privacy { background: var(--sayo-soft); }
+.ld-privacy__grid { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: var(--spacing-8); }
+.ld-privacy__item { display: grid; gap: var(--spacing-2); align-content: start; }
+.ld-privacy__icon {
+  display: grid; place-items: center;
+  inline-size: var(--size-element-lg); block-size: var(--size-element-lg);
+  margin-block-end: var(--spacing-2);
+  border-radius: var(--radius-full);
+  background: var(--color-background-surface); color: var(--color-accent);
+}
+/* Ink: privacy is the brand, so this is its one deep band; the emphasis takes the single coral. */
+[data-direction='ink'] .ld-privacy { background: var(--color-accent); color: var(--color-on-accent); }
+[data-direction='ink'] .ld-privacy .ld-head { border-block-start-color: currentColor; }
+[data-direction='ink'] .ld-privacy .sayo-display em { color: var(--sayo-highlight); }
+[data-direction='ink'] .ld-privacy__icon { background: transparent; color: inherit; box-shadow: inset 0 0 0 1px currentColor; }
+/* Grove: a second, lighter panel that echoes the hero. */
+[data-direction='grove'] .ld-privacy { margin: calc(var(--ld-section) / 2) var(--spacing-3) 0; border-radius: var(--ld-radius-lg); }
+
+/* ---------- 9. closing call to action + footer ---------- */
+.ld-close { position: relative; overflow: hidden; display: grid; align-items: center; min-height: 34rem; }
+.ld-close__media { position: absolute; inset: 0; }
+.ld-close__inner {
+  position: relative;
+  width: 100%; max-width: calc(var(--ld-max) + var(--ld-gutter) * 2);
+  margin-inline: auto; padding: var(--spacing-12) var(--ld-gutter);
+}
+/* Text never sits on the photograph itself: a solid panel here, a forest scrim in Grove. */
+.ld-close__panel {
+  max-width: 30rem; padding: var(--spacing-10);
+  background: var(--color-background-body); color: var(--color-text-primary);
+  border-radius: var(--ld-radius-lg);
+}
+[data-direction='grove'] .ld-close { margin: var(--spacing-3); border-radius: var(--ld-radius-lg); }
+[data-direction='grove'] .ld-close__media::after {
+  content: ''; position: absolute; inset: 0;
+  background: linear-gradient(90deg,
+    color-mix(in srgb, var(--color-accent) 96%, transparent) 0%,
+    color-mix(in srgb, var(--color-accent) 84%, transparent) 30%,
+    transparent 60%);
+}
+[data-direction='grove'] .ld-close__panel { padding: 0; background: none; color: inherit; border-radius: 0; }
+
+.ld-foot { padding-block: var(--spacing-10); }
+.ld-foot__row { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: var(--spacing-4); margin-block-end: var(--spacing-6); }
+.ld-foot__legal { border-block-start: 1px solid var(--color-border); padding-block-start: var(--spacing-5); }
+
+/* ---------- narrower containers ---------- */
+@container ld (max-width: 1040px) {
+  .ld-hero__copy { padding-inline-end: var(--spacing-8); }
+  .ld[data-tiles='stacked'] .ld-tiles { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .ld-how__grid, .ld-pros__grid, .ld-start__panel, [data-direction='grove'] .ld-start__panel { grid-template-columns: minmax(0, 1fr); gap: var(--spacing-8); }
+  .ld-privacy__grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}
+@container ld (max-width: 760px) {
+  .ld-page { --ld-gutter: var(--spacing-5); --ld-section: calc(var(--spacing-12) * 1.25); --ld-gap: var(--spacing-4); }
+  .ld-top .ld-nav { display: none; }
+  .ld-head { margin-block-end: var(--spacing-6); }
+
+  .ld-hero, [data-direction='quiet'] .ld-hero { grid-template-columns: var(--ld-gutter) minmax(0, 1fr) var(--ld-gutter); row-gap: var(--spacing-8); padding-block: var(--spacing-6) var(--spacing-8); }
+  .ld-hero__copy, [data-direction='clay'] .ld-hero__copy { grid-column: 2; padding-inline-end: 0; }
+  .ld-hero__media { grid-column: 2; min-height: 0; aspect-ratio: 4 / 5; }
+  [data-direction='clay'] .ld-hero__copy { padding-block: var(--spacing-8) 0; }
+  [data-direction='clay'] .ld-hero__media { grid-column: 1 / -1; min-height: 0; }
+  [data-direction='quiet'] .ld-hero__media { block-size: auto; aspect-ratio: 3 / 2; }
+
+  .ld[data-tiles] .ld-tiles { grid-template-columns: minmax(0, 1fr); grid-auto-rows: auto; }
+  .ld[data-tiles='overlay'] .ld-tile { grid-column: auto; min-height: 24rem; }
+  .ld[data-tiles='index'] .ld-tile { grid-template-columns: var(--spacing-10) minmax(0, 1fr); column-gap: var(--spacing-3); row-gap: var(--spacing-4); }
+  .ld[data-tiles='index'] .ld-tile__media { grid-column: 1 / -1; }
+  .ld[data-tiles='index'] .ld-tile__body { grid-template-columns: minmax(0, 1fr); }
+  .ld[data-tiles='index'] .ld-tile__body > * { grid-column: 1; grid-row: auto; }
+
+  [data-direction='grove'] .ld-start__panel { padding: var(--spacing-6) var(--spacing-5); }
+  [data-direction='grove'] .ld-start .ld-wrap, [data-direction='grove'] .ld-how .ld-wrap { padding-inline: var(--spacing-3); }
+  [data-direction='grove'] .ld-how .ld-wrap > :first-child { padding-inline: var(--spacing-2); }
+  [data-direction='grove'] .ld-rows { grid-template-columns: minmax(0, 1fr); }
+
+  .ld-stage { padding: var(--spacing-8) var(--spacing-4) var(--spacing-10); }
+  .ld-stage__phone--second { display: none; }
+
+  .ld-topics { grid-template-columns: minmax(0, 1fr); }
+  .ld-privacy__grid { grid-template-columns: minmax(0, 1fr); gap: var(--spacing-6); }
+
+  .ld-close { min-height: 30rem; align-items: end; }
+  [data-direction='grove'] .ld-close { min-height: 38rem; }
+  .ld-close__inner { padding-block: var(--spacing-5); }
+  .ld-close__panel { padding: var(--spacing-6); }
+  [data-direction='grove'] .ld-close__inner { padding-block: var(--spacing-8); }
+  [data-direction='grove'] .ld-close__media::after {
+    background: linear-gradient(to top,
+      color-mix(in srgb, var(--color-accent) 96%, transparent) 0%,
+      color-mix(in srgb, var(--color-accent) 88%, transparent) 36%,
+      transparent 62%);
+  }
+}
+
+/* ---------- story helper: the page in a centred phone-width column ---------- */
+.ld-mobile-frame { display: flex; justify-content: center; min-height: 100vh; background: var(--color-background-muted); }
+.ld-mobile-frame__column { inline-size: 390px; box-shadow: var(--shadow-med); }

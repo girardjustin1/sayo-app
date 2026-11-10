@@ -1,0 +1,50 @@
+import { Meta } from '@storybook/addon-docs/blocks'
+
+<Meta title="Planning/Tech & next steps" />
+
+# Planning: tech, open questions, next steps
+
+## Status (10 November 2026)
+
+Phase 1, design in Storybook: **192 stories + 13 docs pages**. Done: the logo vectorised to SVG; two rounds of
+brand directions as Astryx themes (round 2, current: D Ink, E Clay, F Quiet, G Grove; round 1: the pink set); the full
+user app rebuilt Astryx-first with iOS control sizes (onboarding, PIN, Home and bento Home, guided start, Ask SAYO
+intake with red flags, Safety/GBV flow, Reviews, Find Care, Circle, Learn, Me & Privacy); the Professional dashboard
+and Admin console; a landing page and a ten-slot Higgsfield imagery set per round-2 direction; Mobbin and Hers
+research (Research/). No backend, and every piece of data is fictional. Every open question raised while building is
+in `HUMAN_TODO.md`.
+
+## Proposed tech stack (a proposal for the engineering team, not a decision)
+
+| Layer | Proposal | Why |
+|---|---|---|
+| User app | **Installable web app (PWA)**: Vite + React 19 + Astryx | Works on low-cost Android over slow data, no app-store install (better for privacy on shared phones), instant updates, one codebase. Can be wrapped for the Play Store later (Capacitor) if needed. |
+| Professional + Admin | Same codebase, separate routes and roles | Astryx ships tables, side nav, forms and dialogs; no second design system. |
+| Design system | **Astryx**, one theme per direction | The chosen direction becomes the production theme with `astryx theme build`. |
+| Backend | Postgres with row-level security (e.g. Supabase), server functions | Strict separation: private health records, Circle identity and professional accounts live in separate tables with separate access rules. |
+| AI intake | A Claude model behind a server function, with **deterministic red-flag rules run first** | The clinical lead owns the red-flag list as rules, not prompts. The model asks follow-ups and drafts the summary from a clinically reviewed content library. It never decides urgency alone and never diagnoses. Zero data retention, no training on user data. |
+| Notifications | Web Push with generic payloads | Lock-screen text never names a topic (“You have a new message”). |
+| Analytics | Self-hosted, event-only, de-identified | Pilot metrics without health content. |
+| Licence | Open source (e.g. MIT) | The intent is for the technology to be open source. |
+
+## Decisions needed from the founders
+
+1. **Which direction**: D Ink, E Clay, F Quiet, G Grove, or a blend (for example Grove or Clay for marketing with Quiet’s discretion inside private flows).
+2. **Login**: phone number (OTP) or email? Phones are often shared, so it matters which one is private.
+3. **Emergency and GBV contacts** for Ghana: confirm 112 and which GBV/sexual-assault services and police units to list.
+4. **Red-flag list** and the time-sensitive wording (PEP, emergency contraception, forensic exams) need clinical and legal sign-off.
+5. **Response-time promise** for professional review: none, “usually within 24 hours”, or a pilot-specific window.
+6. **Foreign-licensed professionals**: the dashboard currently limits them to fictional or de-identified cases until the legal advice lands.
+7. **Data residency and Ghana Data Protection Commission** registration, before any real case.
+8. **Language**: English only for the pilot, or Twi/Ga/Ewe later?
+9. **Discreet app icon**: should users be able to choose a neutral icon and name?
+10. **Small-size mark**: approve drawing a simplified mark for favicons and notification icons.
+
+## Next steps
+
+1. Pick a direction (or blend). Then remove the other two themes from the app and keep them in Brand docs.
+2. Turn the core journey into a clickable prototype for 5–8 pilot users (fictional scenarios only), and collect
+   product-validation evidence: understood it? trusted it? AI vs professional clear? Circle feels safe?
+3. Clinical content: the clinical lead reviews the AI information library, red flags and locked copy.
+4. Backend scaffold with role-based access and audit logging (who accepted and completed each review).
+5. Demo kit: screenshots and a demo video straight from this Storybook.

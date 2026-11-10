@@ -1,0 +1,7 @@
+import { Meta, Markdown } from '@storybook/addon-docs/blocks'
+import { fixLinks } from './links'
+import md from '../../../docs/research/ai-intake.md?raw'
+
+<Meta title="Research/02 AI intake" />
+
+<Markdown>{fixLinks(md)}</Markdown>

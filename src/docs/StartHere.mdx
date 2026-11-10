@@ -1,0 +1,74 @@
+import { Meta } from '@storybook/addon-docs/blocks'
+import { Hero, Bridge, DirectionCards, Pillars, InOut, StoryMap, A } from './StartHereVisuals'
+import { Journey } from './Journey'
+
+<Meta title="Start Here" />
+
+# SAYO: Storybook drafts
+
+<Hero />
+
+SAYO gives young women a **private, stigma-free place to ask sensitive health questions**, understand what they may
+need, get verified professional guidance where appropriate, and find the right care. This Storybook is **phase 1**:
+every screen, state and brand idea as a story, before any backend exists. Nothing here talks to a server, and every
+person, clinic and case is **fictional sample data**.
+
+**Why it exists:** to agree on the product (the flows, the safety rules, the words and the look) while changing them
+is still a quick edit, and to give the founder something real to test with pilot users and show to funders.
+
+## The bridge SAYO builds
+
+The whole MVP proves one thing: SAYO can safely move someone from silence to the right care.
+
+<Bridge />
+
+## Brand directions
+
+The logo is fixed: the heart-S mark, lowercase “sayo”, the coral dot. We explored it in rounds. **Round 2 (current)** has four
+personalities that move off pink: Ink, Clay, Quiet and Grove. Round 1 (the pink set) is kept for comparison. Every
+screen in this Storybook renders in all of them.
+Switch with the **Direction** toolbar at the top. Compare them on <A href="./?path=/story/brand-round-2-current-directions-tokens--directions">Brand → Round 2 → Directions</A>.
+
+<DirectionCards />
+
+## The core journey
+
+Onboarding → 18+ → PIN → Home → Ask SAYO → follow-ups → red-flag check → information → summary check → optional
+professional review → queue → professional response → discreet notification → My Reviews → Find Care.
+
+<Journey />
+
+## Four pillars
+
+<Pillars />
+
+## What is in, and what is deliberately out
+
+<InOut />
+
+## Rules every screen follows
+
+- **AI never diagnoses.** Every AI answer is labelled AI and carries the locked line *“This is general health information, not a diagnosis.”*
+- **AI, peers and professionals never blur.** Only Verified Professionals get the green ✓ badge.
+- **Privacy first.** 4-digit PIN, nickname and generated avatar in the Circle, private Ask SAYO history never visible there.
+- **Discreet notifications.** Lock-screen text never names a health topic.
+- **Safety beats the questionnaire.** In GBV and red-flag moments, urgent information comes first, and **Quick exit** is always one tap away.
+- **Locked copy.** Safety and clinical wording is the same in every direction (see <A href="./?path=/story/brand-round-2-current-directions-tokens--voice-and-copy">Voice & Copy</A>).
+
+## How to look around
+
+- **Toolbar → Direction** switches every screen between D · Ink, E · Clay, F · Quiet and G · Grove (and the round-1 pink set).
+- **User/** is the mobile app (390 × 844 phone). **Professional/** and **Admin/** are desktop web tools.
+- Every important state has its own story: empty, waiting, error, red flag, offline, urgent…
+- **Brand/** holds the shared logo and one folder per round of exploration (directions, voice and copy, live Astryx tokens, imagery). Round 2 is current; round 1 (pink) is kept for comparison.
+- **Planning/** holds the tech decisions, open questions and next steps.
+
+## Built on Astryx
+
+Screens are composed from [Astryx](https://astryx.atmeta.com), Meta’s open-source design system (React 19, 150+
+accessible components, themed with CSS custom properties). Each brand direction is an Astryx theme, so choosing a
+direction later is a one-line change, and the professional and admin tools get tables, navigation and forms for free.
+
+## Map of the stories
+
+<StoryMap />

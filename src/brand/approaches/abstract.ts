@@ -1,0 +1,112 @@
+import type { Approach } from './types'
+
+const MODEL = 'gpt_image_2_6 (medium) + logo mark reference'
+
+/** Approach 6. Images and notes are filled in by the imagery agent; concept text can be refined. */
+export const ABSTRACT: Approach = {
+  slug: 'abstract',
+  number: 6,
+  name: 'Brand-built abstraction',
+  idea: 'The looping heart-S becomes ribbons, paper folds and satin; a pattern system that could carry an "African, not animal" identity.',
+  why: [
+    'Completely ownable; grows straight out of the logo',
+    'Zero privacy risk; works next to any topic, including HIV and GBV',
+    'Material changes per direction (paper for Big Sister, frosted satin for Clear, loud satin for Unmuted)',
+    'A pattern system scales to every surface',
+  ],
+  risks: [
+    'Least literal; needs copy to carry meaning',
+    'Heroes read as "the logo, in 3D": strong for splash, repetitive across many screens',
+    'Pattern work must avoid wax-print cliché and cultural borrowing without care',
+    'AI cannot hold the mark\'s geometry in a repeat; the pattern must be drawn in vector by a designer',
+  ],
+  scores: { privacy: 5, warmth: 3, distinct: 5, scalable: 4 },
+  bestFor: [
+    'Splash, safety and sensitive-topic screens',
+    'Backgrounds, packaging, merch',
+    'A recognisable SAYO pattern',
+  ],
+  avoidFor: [
+    'Explaining specific health actions',
+    'Onboarding, where people need to see themselves',
+  ],
+  images: [
+    {
+      src: '/imagery/approaches/abstract/hero-sister.jpg',
+      alt: 'The looping heart-S mark re-made as folded rose-to-coral paper ribbon on blush paper with soft leaf shadows',
+      ratio: '3:4',
+      use: 'hero',
+      direction: 'sister',
+      prompt: 'Abstract brand image built from the reference mark: one continuous looping band that forms a heart flowing into an S. Re-make that exact looping form as a large sculpture of folded and curled thick paper ribbon, gently rising in the upper two thirds of a portrait frame, its turns casting soft daylight shadows. Colours: blush paper background #FFF7F3, ribbon in peach #FFD9C7 shading to rose #D62B63 and coral #FF5A48. Warm, tender, handmade feel, fine paper fibre texture, soft morning light. Lower third mostly calm blush space. No text, no letters, no wordmark, no logo lockup, no people, no animals.',
+      model: MODEL,
+    },
+    {
+      src: '/imagery/approaches/abstract/hero-clear.jpg',
+      alt: 'The looping heart-S mark as a translucent lavender satin ribbon floating on a misty near-white ground',
+      ratio: '3:4',
+      use: 'hero',
+      direction: 'clear',
+      prompt: 'Abstract brand image built from the reference mark: one continuous looping band that forms a heart flowing into an S. Re-make that looping form as a translucent satin ribbon floating in still air, softly lit, in the upper two thirds of a portrait frame. Colours: misty near-white background #FAF8FC, ribbon in pale lavender #EDE4F7 deepening to plum #6D2E9E in the folds, a faint frosted-glass sheen. Calm, quiet, clinical-clean but gentle, lots of breathing room, lower third calm and empty. No text, no letters, no wordmark, no logo lockup, no people, no animals.',
+      model: MODEL,
+    },
+    {
+      src: '/imagery/approaches/abstract/hero-unmuted.jpg',
+      alt: 'A close crop of the heart-S loop as wide magenta-to-coral satin ribbon sweeping off the edges of a deep magenta frame',
+      ratio: '3:4',
+      use: 'hero',
+      direction: 'unmuted',
+      prompt: 'Close crop: the reference mark\'s looping heart-S band re-made as a wide matte satin fabric ribbon, cropped large so its loops sweep past the edges of the portrait frame, bold and graphic, colour shifting from magenta #D4009E to coral #FF5A48 with petal-pink #FFC2DD highlights in the folds, on a flat deep magenta background that fills the frame edge to edge. Crisp studio light, editorial fashion still-life feel, confident and loud. No glitter, no sparkles, no glow effects, no lens flare. No text, no letters, no wordmark, no people, no animals.',
+      model: MODEL,
+    },
+    {
+      src: '/imagery/approaches/abstract/wide.jpg',
+      alt: 'A repeat pattern of the heart-S loop in rotated rows with stripe bands and stepped triangles, ending on a diagonal that leaves the bottom-left plain blush',
+      ratio: '16:9',
+      use: 'wide',
+      prompt: 'Wide brand banner: a crisp, seamless-looking repeat pattern built only from the reference mark\'s looping heart-S band, drawn as a clean flat line of even width, every repeat faithful to the mark\'s shape. The motif is arranged on a strict grid in alternating rows, rotated 90 and 180 degrees and mirrored so loops interlock into a continuous woven rhythm, with thin parallel stripe bands and small stepped triangles between rows, echoing the geometric rhythm of West African strip-woven cloth without copying kente or wax print. Flat screen-print look with a very subtle woven texture. Colours: rose #D62B63, coral #FF5A48, magenta #D4009E, plum #6D2E9E and peach #FFD9C7 on blush #FFF7F3. The pattern covers the top and right of the frame and ends in a clean soft diagonal, leaving the bottom-left third plain calm blush with no marks, for an overlay card. No text, no letters, no maps, no animals, no people, no pixelation.',
+      model: 'gpt_image_2_6 (high) + logo mark reference',
+    },
+    {
+      src: '/imagery/approaches/abstract/topic-prep.jpg',
+      alt: 'A rose-to-coral satin heart-S ribbon wrapped protectively around a soft pearl',
+      ratio: '4:3',
+      use: 'topic',
+      topic: 'PrEP is prevention',
+      prompt: 'Abstract, evocative image about protection: a soft rose and coral satin ribbon shaped like the reference mark\'s looping heart-S band wraps protectively around a smooth pearl-like sphere, cradling it, gentle soft shadows, safety and calm confidence. Full-bleed opaque blush #FFF7F3 background filling the whole frame, peach #FFD9C7 light; no white vignette, no halo, no blur, no glow. Soft 3D, minimal, centered with breathing room. No text, no letters, no pills, no medical objects, no people, no animals.',
+      model: MODEL,
+    },
+    {
+      src: '/imagery/approaches/abstract/topic-contraception.jpg',
+      alt: 'Five folded paper ribbon loops in peach, lavender, rose, coral and plum standing in a row, each a different shape',
+      ratio: '4:3',
+      use: 'topic',
+      topic: 'Your contraception options',
+      prompt: 'Abstract, evocative image about choosing between options: five small folded-paper ribbon loops derived from the reference mark\'s looping band, each a different shape and colour (peach, rose, coral, lavender, plum), standing in a gentle row on a soft peach surface like a curated set to choose from, one slightly forward. Soft daylight, paper texture, friendly and clear. Background blush #FFF7F3. No text, no letters, no logo lockup, no medical objects, no people, no animals.',
+      model: MODEL,
+    },
+    {
+      src: '/imagery/approaches/abstract/topic-mood.jpg',
+      alt: 'A loose lavender satin ribbon curling beneath a glowing crescent moon in a calm purple dusk sky',
+      ratio: '4:3',
+      use: 'topic',
+      topic: 'When your mood feels heavy',
+      prompt: 'Abstract, evocative image about gentle emotional support: a single soft lavender satin ribbon, inspired by the heart curve of the reference mark, curls loosely beneath a calm glowing crescent moon as if cradling it. A quiet dusk sky fills the entire frame edge to edge, fading from lavender #EDE4F7 at the bottom to soft plum #6D2E9E at the top, a few faint stars. No white border, no vignette, no pixelated haze. Peaceful and reassuring, warm not sad. Soft 3D, minimal. No text, no letters, no people, no animals, no rain.',
+      model: MODEL,
+    },
+    {
+      src: '/imagery/approaches/abstract/empty.jpg',
+      alt: 'A single coral ribbon curled into an open loop with a small heart at the top, on plain blush',
+      ratio: '1:1',
+      use: 'empty',
+      prompt: 'Small empty-state image: a single short paper ribbon in coral #FF5A48 shading to rose #D62B63, loosely curled into one soft open loop with a small heart-shaped turn at the top, inspired by the reference mark but simpler, not the full logo, as if waiting to be tied. It rests on a plain full-bleed blush #FFF7F3 background with a soft shadow beneath. Bold simple silhouette that reads clearly at a tiny size, generous empty space around it. No text, no letters, no people, no animals.',
+      model: MODEL,
+    },
+  ],
+  notes: [
+    'Using the cropped logo mark as a reference worked. Every ribbon is recognisably the SAYO loop, and the change of material (paper, frosted satin, loud satin) carries the three directions well.',
+    'Five of the first eight were rejected and regenerated: a glittery Valentine-card Unmuted hero, pixelated glow halos on the PrEP and mood images, an empty state that was just the logo, and a muddy first pattern. The fixes were "no glitter, no glow, full-bleed opaque background" and "simpler than the full logo".',
+    'The repeat pattern is the most promising idea and the weakest execution. The model bends the mark in the rotated rows (some read like "S2" or "&"), so treat it as a direction for a designer to build in vector, not as an asset.',
+    'Topic images are evocative only with copy: the pearl reads as "protected" and the moon reads as "gentle". Neither explains a health action. They suit sensitive topics (HIV, GBV) where showing a person is a privacy risk. At the 150px Learn-card crop the PrEP loop loses its heart top, so final topic art needs the subject kept in the middle band.',
+    'Recommendation: use for splash, safety screens and the pattern system, and pair with the illustrated approach for Learn and onboarding.',
+  ],
+}

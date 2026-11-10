@@ -1,0 +1,193 @@
+/*
+ * SAYO-specific styles that Astryx has no component for: phone chrome, brand
+ * display type, gradient surfaces, the PIN pad. Colours come from Astryx tokens
+ * (--color-*) or the direction's --sayo-* local tokens. No direction hex here.
+ */
+.sayo-root {
+  color: var(--color-text-primary);
+  font-family: var(--font-family-body);
+  height: 100%;
+}
+
+.sayo-display {
+  font-family: var(--sayo-display-font);
+  font-weight: var(--sayo-display-weight);
+  letter-spacing: var(--sayo-display-tracking);
+  line-height: 1.08;
+  text-wrap: balance;
+  margin: 0;
+  color: inherit;
+}
+.sayo-display--xl { font-size: 40px; }
+.sayo-display--lg { font-size: 32px; }
+.sayo-display--md { font-size: 26px; }
+.sayo-display--sm { font-size: 21px; }
+[data-direction='unmuted'] .sayo-display em { font-style: italic; font-weight: 500; }
+/* Round 2 serif directions: one italic accent word per headline (the AskTia move). */
+[data-direction='ink'] .sayo-display em,
+[data-direction='clay'] .sayo-display em { font-style: italic; font-weight: 400; color: var(--sayo-soft-ink); }
+[data-direction='ink'] .sayo-display,
+[data-direction='clay'] .sayo-display { line-height: 1.12; }
+/* Grove: two-tone headlines (the Hers move). The promise takes the colour; lime on dark heroes. */
+[data-direction='grove'] .sayo-display em { font-style: normal; color: var(--sayo-emphasis); }
+[data-direction='grove'] .sayo-hero .sayo-display em { color: var(--sayo-emphasis-on-dark); }
+
+.sayo-gradient-text {
+  background: var(--sayo-gradient);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+/* ---------- phone screen chrome ---------- */
+/*
+ * iOS sizing for the phone app only (Apple HIG: 44pt minimum tap target, ~50pt full-width
+ * buttons). Astryx defaults (28/32/36) are desktop density and stay as-is for the
+ * Professional and Admin tools. Inputs keep 16px text so iOS doesn't zoom on focus.
+ */
+.sayo-screen {
+  --size-element-sm: 36px;
+  --size-element-md: 44px;
+  --size-element-lg: 52px;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  background: var(--color-background-body);
+  position: relative;
+  overflow: hidden;
+}
+.sayo-screen__body { flex: 1; overflow-y: auto; overflow-x: hidden; }
+.sayo-screen__body::-webkit-scrollbar { display: none; }
+.sayo-statusbar {
+  height: 50px;
+  flex: none;
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  padding: 0 28px 8px 34px;
+  font: 600 15px/1 var(--font-family-body);
+  color: var(--color-text-primary);
+}
+.sayo-statusbar--light { color: #fff; }
+.sayo-appbar {
+  flex: none;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-height: 52px;
+  padding: 0 12px;
+}
+.sayo-appbar__title { flex: 1; text-align: center; font-weight: 650; font-size: 17px; }
+.sayo-tabbar {
+  flex: none;
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  border-top: 1px solid var(--color-border);
+  background: var(--color-background-surface);
+  padding: 8px 4px 26px;
+}
+.sayo-tab {
+  display: flex; flex-direction: column; align-items: center; gap: 3px;
+  font-size: 11px; font-weight: 600; color: var(--color-text-secondary);
+  background: none; border: 0; cursor: pointer; padding: 4px 0;
+}
+.sayo-tab[aria-current='page'] { color: var(--color-accent); }
+.sayo-tab__pill { display: grid; place-items: center; width: 52px; height: 28px; border-radius: 999px; }
+.sayo-tab[aria-current='page'] .sayo-tab__pill { background: var(--sayo-soft); }
+.sayo-tab--ask .sayo-tab__pill { background: var(--color-accent); color: var(--color-on-accent); }
+[data-direction='unmuted'] .sayo-tab--ask .sayo-tab__pill { background: var(--sayo-gradient); color: #fff; }
+
+.sayo-quickexit {
+  position: absolute; top: 56px; right: 12px; z-index: 30;
+  display: inline-flex; align-items: center; gap: 6px;
+  padding: 8px 12px; border-radius: 999px; border: 0; cursor: pointer;
+  background: var(--color-text-primary); color: var(--color-background-surface);
+  font: 650 13px/1 var(--font-family-body);
+  box-shadow: var(--shadow-med);
+}
+
+/* ---------- surfaces ---------- */
+.sayo-hero { background: var(--sayo-hero); }
+[data-hero='dark'] .sayo-hero { color: #fff; }
+.sayo-gradient-panel { background: var(--sayo-gradient); color: #fff; border-radius: var(--radius-container); }
+.sayo-soft-panel { background: var(--sayo-soft); color: var(--sayo-soft-ink); border-radius: var(--radius-container); }
+.sayo-card {
+  background: var(--color-background-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-container);
+}
+.sayo-supergraphic { position: absolute; pointer-events: none; opacity: 0.12; }
+
+/* ---------- AI / professional / peer distinctions ---------- */
+.sayo-ai-note {
+  display: flex; gap: 8px; align-items: flex-start;
+  background: var(--sayo-ai-soft); border-radius: 12px; padding: 10px 12px;
+  font-size: 13px; line-height: 1.4; color: var(--color-text-secondary);
+}
+.sayo-pro-badge {
+  display: inline-flex; align-items: center; gap: 4px;
+  padding: 3px 8px 3px 6px; border-radius: 999px;
+  background: var(--sayo-pro-soft); color: var(--sayo-pro);
+  font: 700 12px/1.2 var(--font-family-body);
+}
+.sayo-pro-block { border-left: 3px solid var(--sayo-pro); background: var(--sayo-pro-soft); border-radius: 4px 14px 14px 4px; }
+
+/* ---------- PIN ---------- */
+.sayo-pin-dots { display: flex; gap: 18px; justify-content: center; }
+.sayo-pin-dot { width: 16px; height: 16px; border-radius: 50%; border: 2px solid var(--color-accent); }
+.sayo-pin-dot[data-filled='true'] { background: var(--color-accent); }
+.sayo-pin-dot[data-error='true'] { border-color: var(--color-error); background: var(--color-error); }
+.sayo-keypad { display: grid; grid-template-columns: repeat(3, 72px); gap: 14px 28px; justify-content: center; }
+.sayo-key {
+  width: 72px; height: 72px; border-radius: 50%; border: 0; cursor: pointer;
+  background: var(--color-background-surface); color: var(--color-text-primary);
+  font: 500 28px/1 var(--font-family-body); box-shadow: inset 0 0 0 1px var(--color-border);
+}
+.sayo-key--ghost { background: none; box-shadow: none; font-size: 15px; font-weight: 600; }
+
+/* ---------- misc ---------- */
+.sayo-chip-row { display: flex; gap: 8px; overflow-x: auto; padding-bottom: 2px; }
+.sayo-chip-row::-webkit-scrollbar { display: none; }
+.sayo-img { display: block; width: 100%; object-fit: cover; }
+.sayo-lock-notification {
+  background: rgb(255 255 255 / 0.72); backdrop-filter: blur(20px);
+  border-radius: 22px; padding: 12px 14px; color: #111;
+}
+
+/* Buttons sitting on the gradient (Direction C hero moments). Body text never sits on the gradient; buttons go white. */
+.sayo-btn-on-gradient { background-color: #fff; color: var(--color-accent); }
+.sayo-btn-on-gradient-ghost { background-color: rgb(255 255 255 / 0.16); color: #fff; box-shadow: inset 0 0 0 1.5px rgb(255 255 255 / 0.7); }
+
+/* ---------- mobile chat composer ---------- */
+.sayo-composer {
+  display: flex; align-items: flex-end; gap: 8px;
+  min-height: 48px; padding: 6px 6px 6px 16px;
+  background: var(--color-background-surface);
+  border: 1px solid var(--color-border-emphasized);
+  border-radius: 24px;
+  box-shadow: 0 2px 10px rgb(40 20 40 / 0.06);
+}
+.sayo-composer:focus-within { border-color: var(--color-accent); }
+.sayo-composer__input {
+  flex: 1; min-width: 0; resize: none; border: 0; outline: none; background: transparent;
+  padding: 7px 0; margin: 0;
+  font: 400 15px/22px var(--font-family-body); color: var(--color-text-primary);
+}
+.sayo-composer__input::placeholder { color: var(--color-text-placeholder, var(--color-text-secondary)); }
+.sayo-composer__send {
+  flex: none; width: 36px; height: 36px; border-radius: 50%; border: 0; cursor: pointer;
+  display: grid; place-items: center;
+  background: var(--sayo-soft); color: var(--sayo-soft-ink);
+}
+.sayo-composer__send[data-ready] { background: var(--color-accent); color: var(--color-on-accent); }
+.sayo-composer[data-disabled] { opacity: 0.6; }
+
+/* iOS: field text at 16px (smaller makes Safari zoom on focus) and comfortable inner padding. */
+.sayo-screen input:not([type='checkbox']):not([type='radio']),
+.sayo-screen textarea { font-size: 16px; }
+
+/* Grove: the lime button lives only on dark forest panels (.sayo-hero or [data-surface='dark']), as at Hers. */
+[data-direction='grove'] :is(.sayo-hero, [data-surface='dark']) .astryx-button[data-variant='primary'] {
+  background-color: var(--sayo-highlight);
+  color: #1F2A1A;
+}

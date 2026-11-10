@@ -1,0 +1,7 @@
+import { Meta, Markdown } from '@storybook/addon-docs/blocks'
+import { fixLinks } from './links'
+import md from '../../../docs/research/async-review.md?raw'
+
+<Meta title="Research/03 Async review" />
+
+<Markdown>{fixLinks(md)}</Markdown>
