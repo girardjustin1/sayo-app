@@ -5,7 +5,9 @@
  *
  * Inside a prototype frame or a preview tile we open them non-modally instead. They are
  * `position: fixed` and rendered in place, so they resolve against the frame (which has
- * a transform) and stay inside it; prototype.css adds the dimmed backdrop. Stories
+ * a transform) and stay inside it; prototype.css adds the dimmed backdrop and releases
+ * the page scroll lock Astryx applies for open dialogs. Preview tiles are `inert`, so a
+ * dialog opening inside one cannot take focus and scroll the page to itself. Stories
  * outside the prototype are untouched.
  */
 const KEY = '__sayoNativeShowModal'

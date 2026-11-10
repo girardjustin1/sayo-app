@@ -17,6 +17,10 @@ export type ProtoApi = {
   hints: boolean
   /** true: fields arrive filled. false: they start empty and fill when tapped. */
   prefill: boolean
+  /** A step with empty fields hands the shell its "fill everything" action (null when there is nothing to fill). */
+  offerFill: (fill: (() => void) | null) => void
+  /** true: the shell shows the "Fill in for me" button in its panel, so the step shows no pill over the screen. */
+  fillInPanel: boolean
 }
 
 export const ProtoCtx = createContext<ProtoApi>({
@@ -30,6 +34,8 @@ export const ProtoCtx = createContext<ProtoApi>({
   toast: () => {},
   hints: true,
   prefill: true,
+  offerFill: () => {},
+  fillInPanel: false,
 })
 
 export const useProto = () => useContext(ProtoCtx)

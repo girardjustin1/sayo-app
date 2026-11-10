@@ -54,6 +54,7 @@ export function Prototype({ mode = 'app', initialFlow, initialStep, direction: f
   const [finishedAt, setFinishedAt] = useState<number | null>(null)
   const [toastMsg, setToastMsg] = useState<string | null>(null)
   const [panel, setPanel] = useState(false)
+  const [filler, setFiller] = useState<(() => void) | null>(null)
   const wide = useMedia('(min-width: 860px)') && !embedded
 
   useEffect(() => {
@@ -89,6 +90,7 @@ export function Prototype({ mode = 'app', initialFlow, initialStep, direction: f
   )
 
   const flow = FLOWS.find((f) => f.id === route.flow)
+  const desktop = flow?.device === 'desktop'
 
   const start = useCallback(
     (id: FlowId, step?: string) => {
@@ -108,15 +110,23 @@ export function Prototype({ mode = 'app', initialFlow, initialStep, direction: f
     () => ({
       hints,
       prefill,
+      // The function is stored as-is (a state setter would call it).
+      offerFill: (fn) => setFiller(() => fn),
+      fillInPanel: wide || desktop,
       go: (step) => {
         setHistory((h) => (route.step ? [...h, route.step] : h))
         navigate({ flow: route.flow, step })
       },
       back: () => {
         const prev = history.at(-1)
-        if (!prev) return
-        setHistory((h) => h.slice(0, -1))
-        navigate({ flow: route.flow, step: prev })
+        if (prev) {
+          setHistory((h) => h.slice(0, -1))
+          return navigate({ flow: route.flow, step: prev })
+        }
+        // Opened by a deep link, so there is no history: go to the step before this one.
+        const steps = FLOWS.find((f) => f.id === route.flow)?.steps ?? []
+        const i = steps.findIndex((x) => x.id === route.step)
+        if (i > 0) navigate({ flow: route.flow, step: steps[i - 1].id })
       },
       startFlow: start,
       menu: () => {
@@ -133,12 +143,11 @@ export function Prototype({ mode = 'app', initialFlow, initialStep, direction: f
         setTimeout(() => setToastMsg(null), 2200)
       },
     }),
-    [hints, prefill, history, navigate, route, start],
+    [hints, prefill, history, navigate, route, start, wide, desktop],
   )
 
   const secs = startedAt ? Math.round(((finishedAt ?? Date.now()) - startedAt) / 1000) : 0
   const done = !!finishedAt
-  const desktop = flow?.device === 'desktop'
   const controls = { direction, onDirection: fixedDirection ? undefined : setDirection, hints, onHints: setHints, prefill, onPrefill: setPrefill }
 
   const screen = flow ? (
@@ -160,7 +169,7 @@ export function Prototype({ mode = 'app', initialFlow, initialStep, direction: f
   )
   // Embedded: the story decorator already provides the direction.
   const themed = embedded ? device : <DirectionProvider id={direction}>{device}</DirectionProvider>
-  const panelProps = { flow, taps, secs, done, step: route.step, onJump: (s: string) => navigate({ flow: route.flow, step: s }), onMenu: api.menu, onRestart: api.restart, ...controls }
+  const panelProps = { flow, taps, secs, done, onFill: filler, step: route.step, onJump: (s: string) => navigate({ flow: route.flow, step: s }), onMenu: api.menu, onRestart: api.restart, ...controls }
 
   return (
     <ProtoCtx.Provider value={api}>
@@ -222,6 +231,18 @@ interface PanelProps {
   onHints: (v: boolean) => void
   prefill: boolean
   onPrefill: (v: boolean) => void
+  /** Set while the current step has empty fields. */
+  onFill: (() => void) | null
+}
+
+/** Fills every field on the current step. Shown only while there is something to fill. */
+function FillButton({ onFill }: Pick<PanelProps, 'onFill'>) {
+  if (!onFill) return null
+  return (
+    <button type="button" className="proto-btn proto-fillbtn" onClick={onFill}>
+      ✎ Fill in for me
+    </button>
+  )
 }
 
 /** The two switches every panel shows. */
@@ -262,7 +283,7 @@ function Stat({ label, value }: { label: string; value: ReactNode }) {
 }
 
 /** Beside the phone on wide screens. */
-function SidePanel({ flow, taps, secs, done, step, onJump, onMenu, onRestart, direction, onDirection, hints, onHints, prefill, onPrefill }: PanelProps) {
+function SidePanel({ flow, taps, secs, done, step, onJump, onMenu, onRestart, direction, onDirection, hints, onHints, prefill, onPrefill, onFill }: PanelProps) {
   useTick(!!flow && !done)
   return (
     <aside className="proto-side">
@@ -278,6 +299,7 @@ function SidePanel({ flow, taps, secs, done, step, onJump, onMenu, onRestart, di
             <Stat label={done ? 'Done in' : 'Time'} value={clock(secs)} />
           </div>
           {done && <div className="proto-done">End of this flow. Restart it, or go back to the menu.</div>}
+          <FillButton onFill={onFill} />
           <div className="proto-actions">
             <button type="button" className="proto-btn proto-btn--solid" onClick={onMenu}>← Menu</button>
             <button type="button" className="proto-btn" onClick={onRestart}>Restart</button>
@@ -311,7 +333,7 @@ function SidePanel({ flow, taps, secs, done, step, onJump, onMenu, onRestart, di
 }
 
 /** Above the browser frame for the desktop flows. */
-function TopBar({ flow, taps, secs, done, step, onJump, onMenu, onRestart, direction, onDirection, hints, onHints, prefill, onPrefill }: PanelProps) {
+function TopBar({ flow, taps, secs, done, step, onJump, onMenu, onRestart, direction, onDirection, hints, onHints, prefill, onPrefill, onFill }: PanelProps) {
   useTick(!!flow && !done)
   if (!flow) return null
   return (
@@ -322,6 +344,7 @@ function TopBar({ flow, taps, secs, done, step, onJump, onMenu, onRestart, direc
         <div className="proto-label">Prototype · {flow.who}</div>
         <strong>{flow.title}</strong>
       </div>
+      <FillButton onFill={onFill} />
       <span className="proto-top__stat">{taps} taps · {clock(secs)}{done ? ' · done' : ''}</span>
       <label className="proto-select">
         <span className="proto-label">Jump to</span>
@@ -329,7 +352,14 @@ function TopBar({ flow, taps, secs, done, step, onJump, onMenu, onRestart, direc
           {flow.steps.map((s) => <option key={s.id} value={s.id}>{s.title}</option>)}
         </select>
       </label>
-      {onDirection && <DirectionPills direction={direction} onDirection={onDirection} />}
+      {onDirection && (
+        <label className="proto-select">
+          <span className="proto-label">Brand</span>
+          <select value={direction} onChange={(e) => onDirection(e.target.value as DirectionId)}>
+            {DIRECTION_IDS.map((id) => <option key={id} value={id}>{DIRECTIONS[id].letter} · {DIRECTIONS[id].name}</option>)}
+          </select>
+        </label>
+      )}
       <Switches hints={hints} onHints={onHints} prefill={prefill} onPrefill={onPrefill} short />
     </header>
   )

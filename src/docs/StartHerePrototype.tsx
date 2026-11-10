@@ -35,14 +35,14 @@ const font = "'DM Sans Variable', system-ui, sans-serif"
 const story = (id: string) => `./?path=/story/${id}`
 
 /** Previews must not glow, navigate or count taps. */
-const STILL: ProtoApi = { go: () => {}, back: () => {}, startFlow: () => {}, menu: () => {}, restart: () => {}, tap: () => {}, finish: () => {}, toast: () => {}, hints: false, prefill: true }
+const STILL: ProtoApi = { go: () => {}, back: () => {}, startFlow: () => {}, menu: () => {}, restart: () => {}, tap: () => {}, finish: () => {}, toast: () => {}, hints: false, prefill: true, offerFill: () => {}, fillInPanel: false }
 
 function Live({ children }: { children: ReactNode }) {
   const dir = useDocsDirection()
   return (
     <ProtoCtx.Provider value={STILL}>
       <DirectionProvider id={dir}>
-        <div data-proto-still style={{ height: '100%', pointerEvents: 'none' }} aria-hidden>{children}</div>
+        <div data-proto-still inert style={{ height: '100%' }}>{children}</div>
       </DirectionProvider>
     </ProtoCtx.Provider>
   )

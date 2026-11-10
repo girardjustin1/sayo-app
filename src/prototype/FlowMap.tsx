@@ -12,7 +12,7 @@ import './prototype.css'
 const STORY: Record<Flow['id'], string> = { ask: 'ask-sayo', circle: 'circle', safety: 'safety', pro: 'professional', admin: 'admin' }
 
 /** Tiles show the filled state and mark the control a tester taps next, but do nothing. */
-const STILL: ProtoApi = { go: () => {}, back: () => {}, startFlow: () => {}, menu: () => {}, restart: () => {}, tap: () => {}, finish: () => {}, toast: () => {}, hints: true, prefill: true }
+const STILL: ProtoApi = { go: () => {}, back: () => {}, startFlow: () => {}, menu: () => {}, restart: () => {}, tap: () => {}, finish: () => {}, toast: () => {}, hints: true, prefill: true, offerFill: () => {}, fillInPanel: false }
 
 const isSide = (s: FlowStep) => /\(side path\)/i.test(s.title)
 
@@ -21,7 +21,7 @@ function Tile({ flow, step, n, direction }: { flow: Flow; step: FlowStep; n?: nu
   const live = (
     <ProtoCtx.Provider value={STILL}>
       <DirectionProvider id={direction}>
-        <div data-proto-still style={{ height: '100%', pointerEvents: 'none' }} aria-hidden>{renderStep(flow, step.id)}</div>
+        <div data-proto-still inert style={{ height: '100%' }}>{renderStep(flow, step.id)}</div>
       </DirectionProvider>
     </ProtoCtx.Provider>
   )

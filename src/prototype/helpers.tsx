@@ -115,7 +115,11 @@ export type FieldValue = { match: string | RegExp; value: string }
  *  - prop-driven (no state of its own): pass `empty` and `filled` variants plus the
  *    `fields` whose tap swaps them, e.g. <CreateAccount /> and <CreateAccount filled />.
  *  - real inputs: pass the screen as children plus `values` (field label → sample text).
+ *  - other controls (a checkbox to tick, a choice to make): pass `extra`, with `pending`
+ *    while something is still to do and `fill` to do it. It can be combined with `values`.
  * `rules` are the step's normal rules (first = main path); they work in both states.
+ * The "Fill in for me" action shows in the prototype's panel; on a real phone, with no
+ * panel, it is a pill over the screen.
  */
 export function Fill({
   rules,
@@ -123,6 +127,7 @@ export function Fill({
   empty,
   filled,
   values = [],
+  extra,
   children,
 }: {
   rules: AppRule[]
@@ -130,11 +135,12 @@ export function Fill({
   empty?: ReactNode
   filled?: ReactNode
   values?: FieldValue[]
+  extra?: { pending: boolean; fill: () => void }
   children?: ReactNode
 }) {
-  const { prefill } = useProto()
+  const { prefill, offerFill, fillInPanel } = useProto()
   const swap = empty !== undefined && filled !== undefined
-  const [ready, setReady] = useState(prefill && swap)
+  const [ready, setReady] = useState(swap ? prefill : values.length === 0)
   const anchor = useRef<HTMLSpanElement>(null)
   const root = () => anchor.current?.parentElement ?? null
 
@@ -156,19 +162,41 @@ export function Fill({
     [values.map((v) => String(v.match)).join('|')],
   )
 
-  // Prefill on: real inputs are typed in as soon as the screen mounts.
+  // Real inputs: with Prefill on they are typed in as soon as the screen mounts. Either way,
+  // keep "is anything still empty?" up to date, including when she types for herself.
   useEffect(() => {
-    if (prefill && !swap && values.length) fillValues()
+    if (swap || !values.length) return
+    const r = root()
+    if (!r) return
+    const check = () => setReady(!textFields(r).some((el) => !el.value && values.some((x) => hit(x.match, labelOf(el)))))
+    if (prefill) fillValues()
+    else requestAnimationFrame(check)
+    r.addEventListener('input', check)
+    return () => r.removeEventListener('input', check)
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
-  const fillAll = () => (swap ? setReady(true) : fillValues())
-  const waiting: AppRule[] = ready
+  const pending = !ready || !!extra?.pending
+  const fillAll = () => {
+    if (swap) setReady(true)
+    else if (values.length) fillValues()
+    extra?.fill()
+  }
+  // The shell's panel gets a "Fill in for me" button for this step while fields are empty.
+  const fillRef = useRef(fillAll)
+  fillRef.current = fillAll
+  useEffect(() => {
+    offerFill(pending ? () => fillRef.current() : null)
+    return () => offerFill(null)
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [pending])
+  const pill = pending && !fillInPanel
+  const waiting: AppRule[] = !pending
     ? rules
     : [
-        { match: FILL_LABEL, to: run(fillAll) },
-        ...fields.map((m) => ({ match: m, to: run(() => setReady(true)), soft: true })),
-        ...(swap ? [] : values.map((v) => ({ match: v.match, to: run(() => fillValues(v.match)), soft: true }))),
+        ...(pill ? [{ match: FILL_LABEL, to: run(fillAll) }] : []),
+        ...(ready ? [] : fields.map((m) => ({ match: m, to: run(() => setReady(true)), soft: true }))),
+        ...(swap || ready ? [] : values.map((v) => ({ match: v.match, to: run(() => fillValues(v.match)), soft: true }))),
         // The step's own rules still work, but the main button waits its turn to glow.
         ...rules.map((r, i) => (i === 0 ? { ...r, quiet: true } : r)),
       ]
@@ -177,7 +205,7 @@ export function Fill({
     <Proto rules={waiting}>
       <span ref={anchor} hidden />
       {swap ? (ready ? filled : empty) : children}
-      {!ready && (
+      {pill && (
         <button type="button" className="proto-skip proto-skip--fill">
           {FILL_LABEL}
         </button>

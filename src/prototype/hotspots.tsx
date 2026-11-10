@@ -39,6 +39,36 @@ export const labelOf = (el: Element) => {
 
 const hit = (m: string | RegExp, label: string) => (typeof m === 'string' ? label.toLowerCase().includes(m.toLowerCase()) : m.test(label))
 
+/**
+ * Astryx clickable cards keep their real <button> at 1 × 1px inside a
+ * [data-pressable-container]; what a person sees and taps is the card around it.
+ */
+const PRESSABLE = '[data-pressable-container]'
+const pressableControl = (card: Element) => card.querySelector(':scope > button, :scope > a')
+/** The thing a person actually sees for a control: the card, if the control is its hidden button. */
+const surface = (el: Element | undefined) => {
+  if (!el) return el
+  const card = el.parentElement
+  if (!card) return el
+  if (card.matches(PRESSABLE) && pressableControl(card) === el) return card
+  // Astryx adds the container attribute after mount, so also go by what is on screen:
+  // a control about a pixel in size is never what a person sees.
+  const { offsetWidth: w, offsetHeight: h } = el as HTMLElement
+  return w > 0 && h > 0 && w <= 2 && h <= 2 ? card : el
+}
+/** Every control a tap at `target` could mean, innermost first. */
+function controlsAt(target: Element, root: Element) {
+  const out: Element[] = []
+  for (let node: Element | null = target; node && root.contains(node); node = node.parentElement) {
+    if (node.matches(TAPPABLE)) out.push(node)
+    else if (node.matches(PRESSABLE)) {
+      const control = pressableControl(node)
+      if (control) out.push(control)
+    }
+  }
+  return out
+}
+
 function useHighlight(ref: React.RefObject<HTMLElement | null>, rules: Rule[], enabled: boolean) {
   const key = rules.map((r) => `${r.match}${r.quiet ? '~' : ''}${r.soft ? '+' : ''}`).join('|')
   useLayoutEffect(() => {
@@ -60,9 +90,10 @@ function useHighlight(ref: React.RefObject<HTMLElement | null>, rules: Rule[], e
           return ![...t.querySelectorAll(TAPPABLE)].some((c) => labelOf(c) === label)
         })
         if (!matches.length) return void unmatched.push(String(rule.match))
-        // Ring the field itself, not its label text.
+        // Ring the field itself, not its label text; and the whole card when the real control
+        // is the 1px button Astryx keeps inside a clickable card.
         const live = matches.filter((m) => !off(m))
-        const el = live.find((m) => m.matches('input, textarea, select')) ?? live[0]
+        const el = surface(live.find((m) => m.matches('input, textarea, select')) ?? live[0])
         if (!el) return
         if (i === 0) el.setAttribute('data-hot-primary', '')
         if (!rule.quiet && enabled) el.setAttribute(rule.soft ? 'data-hot-soft' : 'data-hot-auto', '')
@@ -72,9 +103,19 @@ function useHighlight(ref: React.RefObject<HTMLElement | null>, rules: Rule[], e
       else root.removeAttribute('data-proto-unmatched')
     }
     paint()
-    const mo = new MutationObserver(() => requestAnimationFrame(paint))
-    mo.observe(root, { childList: true, subtree: true, characterData: true })
-    return () => mo.disconnect()
+    // One pending repaint at most, cancelled on cleanup: a frame requested under the old
+    // rules must not run after the rules change, or it would ring the previous control.
+    let frame = 0
+    const mo = new MutationObserver(() => {
+      cancelAnimationFrame(frame)
+      frame = requestAnimationFrame(paint)
+    })
+    // Attributes too, but only the ones that change which control gets the ring (never our own).
+    mo.observe(root, { childList: true, subtree: true, characterData: true, attributes: true, attributeFilter: ['data-pressable-container', 'disabled', 'aria-disabled'] })
+    return () => {
+      mo.disconnect()
+      cancelAnimationFrame(frame)
+    }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [ref, key, enabled])
 }
@@ -82,36 +123,40 @@ function useHighlight(ref: React.RefObject<HTMLElement | null>, rules: Rule[], e
 /** Wraps one real screen and routes taps according to `rules`. */
 export function ProtoScreen({ rules, children }: { rules: Rule[]; children: ReactNode }) {
   const ref = useRef<HTMLDivElement>(null)
+  const lastTap = useRef(0)
   const { go, back, hints, tap, toast } = useProto()
   useHighlight(ref, rules, hints)
+  // A new step starts at the top. (Not on every render: a tap that ticks a box must not scroll the screen.)
   useEffect(() => {
     ref.current?.querySelector('.sayo-screen__body')?.scrollTo({ top: 0 })
-  }, [children])
+  }, [])
 
   return (
     <div
       ref={ref}
       className="proto-screen"
       onClickCapture={(e) => {
-        const el = (e.target as Element).closest(TAPPABLE)
-        if (!el || !ref.current?.contains(el)) return
+        const root = ref.current
+        if (!root) return
+        const controls = controlsAt(e.target as Element, root)
+        if (!controls.length) return
         // Count the tap after this click has finished. Updating state now would re-render in the
         // middle of the click and undo a checkbox, switch or radio before its own handler runs.
-        setTimeout(tap, 0)
+        // A tap on a label also clicks its input: count that once.
+        if (e.timeStamp - lastTap.current > 40) setTimeout(tap, 0)
+        lastTap.current = e.timeStamp
         // Innermost first: a row may contain its own buttons.
-        let node: Element | null = el
-        while (node && ref.current.contains(node)) {
+        for (const node of controls) {
           const label = labelOf(node)
           const rule = rules.find((r) => hit(r.match, label))
-          if (rule) {
-            e.preventDefault()
-            e.stopPropagation()
-            if (typeof rule.to === 'function') rule.to()
-            else go(rule.to)
-            return
-          }
-          node = node.parentElement?.closest(TAPPABLE) ?? null
+          if (!rule) continue
+          e.preventDefault()
+          e.stopPropagation()
+          if (typeof rule.to === 'function') rule.to()
+          else go(rule.to)
+          return
         }
+        const el = controls[0]
         const label = labelOf(el)
         if (/^(back|close)$/i.test(label)) {
           e.preventDefault()

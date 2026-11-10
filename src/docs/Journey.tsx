@@ -49,7 +49,7 @@ export function Journey() {
         {STEPS.map((s, i) => (
           <a key={s.proto} href={protoUrl(`#/ask/${s.proto}`)} target="_blank" rel="noreferrer" style={{ textDecoration: 'none', color: '#1F1D24', flex: 'none', width: 390 * 0.46 }}>
             <MiniPhone scale={0.46}>
-              <DirectionProvider id={dir}><div data-proto-still style={{ height: '100%', pointerEvents: 'none' }}>{s.screen}</div></DirectionProvider>
+              <DirectionProvider id={dir}><div data-proto-still inert style={{ height: '100%' }}>{s.screen}</div></DirectionProvider>
             </MiniPhone>
             <div style={{ marginTop: 12, fontSize: 11, fontWeight: 800, color: '#C4007F', letterSpacing: '0.08em' }}>STEP {i + 1}</div>
             <div style={{ fontSize: 14, fontWeight: 700 }}>{s.label}</div>

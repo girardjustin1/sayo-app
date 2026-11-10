@@ -6,15 +6,19 @@
 html:has(.proto-page, .proto-root), html:has(.proto-page, .proto-root) body, html:has(.proto-page, .proto-root) #root { height: 100%; margin: 0; }
 
 /* ---------- tap hints ---------- */
+/*
+ * Paint only: an outline and a shadow. A hint must never change `position`, size or
+ * spacing, or it moves the screen it is pointing at.
+ */
 @keyframes proto-hot {
-  0%, 100% { box-shadow: 0 0 0 2px rgb(14 165 233 / 0.95), 0 0 0 6px rgb(14 165 233 / 0.25); }
-  50% { box-shadow: 0 0 0 2px rgb(14 165 233 / 0.95), 0 0 0 11px rgb(14 165 233 / 0); }
+  0%, 100% { box-shadow: 0 0 0 6px rgb(14 165 233 / 0.25); }
+  50% { box-shadow: 0 0 0 11px rgb(14 165 233 / 0); }
 }
-[data-hot-auto] { animation: proto-hot 1.5s ease-in-out infinite; position: relative; z-index: 1; }
+[data-hot-auto] { outline: 2px solid rgb(14 165 233 / 0.95); outline-offset: 0; animation: proto-hot 1.5s ease-in-out infinite; }
 /* Fields waiting to be filled: a still outline, so only the next action pulses. */
-[data-hot-soft] { outline: 2px dashed rgb(14 165 233 / 0.85); outline-offset: 3px; border-radius: 6px; }
+[data-hot-soft] { outline: 2px dashed rgb(14 165 233 / 0.85); outline-offset: 3px; }
 @media (prefers-reduced-motion: reduce) {
-  [data-hot-auto] { animation: none; box-shadow: 0 0 0 2px rgb(14 165 233 / 0.95), 0 0 0 5px rgb(14 165 233 / 0.25); }
+  [data-hot-auto] { animation: none; box-shadow: 0 0 0 5px rgb(14 165 233 / 0.25); }
 }
 
 /* ---------- inside the device ---------- */
@@ -31,7 +35,8 @@ html:has(.proto-page, .proto-root), html:has(.proto-page, .proto-root) body, htm
 /* "Fill in for me": sits above footers and tab bars. */
 .proto-skip--fill { bottom: 104px; }
 .proto-skip--fill::before { content: '✎  '; }
-.proto-browser .proto-skip { left: auto; right: 24px; translate: none; bottom: 24px; }
+.proto-browser .proto-skip { bottom: 20px; }
+.proto-browser .proto-skip--fill { bottom: 20px; }
 .proto-toast { position: absolute; inset: auto 0 96px 0; z-index: 70; display: flex; justify-content: center; pointer-events: none; padding: 0 20px; }
 .proto-toast span { background: rgb(17 24 39 / 0.92); color: #fff; padding: 9px 16px; border-radius: 999px; font: 500 13px/1.3 system-ui, sans-serif; text-align: center; box-shadow: 0 6px 20px rgb(0 0 0 / 0.25); }
 
@@ -70,6 +75,9 @@ html:has(.proto-page, .proto-root), html:has(.proto-page, .proto-root) body, htm
   border: 1px solid #C9C5D1; background: transparent; color: #1F1D24; font: 600 14px/1 'DM Sans Variable', system-ui, sans-serif;
 }
 .proto-btn--solid { background: #1F1D24; border-color: #1F1D24; color: #fff; }
+.proto-fillbtn { flex: none; width: 100%; background: #0EA5E9; border-color: #0EA5E9; color: #fff; animation: proto-hot 1.5s ease-in-out infinite; }
+.proto-top .proto-fillbtn { width: auto; }
+@media (prefers-reduced-motion: reduce) { .proto-fillbtn { animation: none; } }
 .proto-list { margin: 0; padding-left: 18px; list-style: disc; font-size: 13px; line-height: 1.55; color: #4B4855; }
 .proto-jump { display: grid; gap: 1px; max-height: 250px; overflow-y: auto; padding-right: 4px; }
 .proto-jump button { text-align: left; border: 0; background: none; cursor: pointer; padding: 6px 10px; border-radius: 8px; font: 400 13px/1.3 'DM Sans Variable', system-ui, sans-serif; color: #4B4855; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
@@ -85,14 +93,17 @@ html:has(.proto-page, .proto-root), html:has(.proto-page, .proto-root) body, htm
 /* Inside a Storybook story the canvas is the page. */
 .proto-page--story { min-height: 100vh; }
 
-.proto-top { width: 100%; max-width: 1280px; box-sizing: border-box; display: flex; align-items: center; gap: 12px; flex-wrap: wrap; }
+.proto-top { width: 100%; max-width: 1280px; box-sizing: border-box; display: flex; align-items: center; gap: 12px; flex-wrap: nowrap; min-height: 44px; }
+.proto-top > * { flex: none; }
 .proto-top .proto-btn { flex: none; }
-.proto-top__title { margin-right: auto; }
-.proto-top__title .proto-label { margin: 0; }
+.proto-top .proto-top__title { margin-right: auto; flex: 1 1 0; min-width: 0; }
+.proto-top__title strong { display: block; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.proto-top__stat { white-space: nowrap; }
+.proto-top__title .proto-label { margin: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 .proto-top__stat { font-size: 13px; font-variant-numeric: tabular-nums; color: #4B4855; }
 .proto-select { display: flex; align-items: center; gap: 8px; }
 .proto-select .proto-label { margin: 0; }
-.proto-select select { max-width: 220px; height: 34px; border-radius: 8px; border: 1px solid #C9C5D1; background: #fff; padding: 0 8px; font: 400 13px 'DM Sans Variable', system-ui, sans-serif; }
+.proto-select select { max-width: 190px; height: 34px; border-radius: 8px; border: 1px solid #C9C5D1; background: #fff; padding: 0 8px; font: 400 13px 'DM Sans Variable', system-ui, sans-serif; }
 
 /* ---------- phone-size menu ---------- */
 .proto-mini {
@@ -107,7 +118,7 @@ html:has(.proto-page, .proto-root), html:has(.proto-page, .proto-root) body, htm
 .proto-sheet__card .proto-check { justify-content: center; }
 
 /* Flow maps: many tiles at once, so the hint ring holds still. */
-.proto-map [data-hot-auto] { animation: none; box-shadow: 0 0 0 3px rgb(14 165 233 / 0.95), 0 0 0 8px rgb(14 165 233 / 0.25); }
+.proto-map [data-hot-auto] { animation: none; outline-width: 3px; box-shadow: 0 0 0 8px rgb(14 165 233 / 0.25); }
 
 /*
  * Dialogs and drawers kept inside the frame (see modals.ts). The device area is the
@@ -118,3 +129,10 @@ html:has(.proto-page, .proto-root), html:has(.proto-page, .proto-root) body, htm
 dialog[data-proto-modal][open] { outline: 200vmax solid rgb(20 16 24 / 0.38); z-index: 50; }
 dialog.astryx-dialog[data-proto-modal][open] { inset: 0; margin: auto; max-height: calc(100% - 48px); }
 dialog.astryx-drawer[data-proto-modal][open] { top: 0; bottom: 0; height: 100%; max-height: 100%; }
+
+/*
+ * Astryx locks page scrolling (inline overflow: hidden on <html>) whenever a dialog is open.
+ * Dialogs kept inside a frame are not page-level modals, so the page must keep scrolling:
+ * a flow map can show a dozen open drawers at once.
+ */
+html:has(dialog[data-proto-modal][open]):not(:has(dialog:modal)) { overflow: visible !important; overscroll-behavior-y: auto !important; }

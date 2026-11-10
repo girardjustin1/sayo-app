@@ -1,8 +1,9 @@
 /**
  * Walks the clickable prototype the way a tester would and proves it has no dead ends.
  *  1. Every step of every flow: loads it directly and reports tap rules that match nothing.
- *  2. The main path of every flow: taps the primary glowing control (or waits for an
- *     auto-advance) from the start until the flow reports "done", and prints the path.
+ *  2. The main path of every flow: fills fields with the panel's "Fill in for me", then clicks
+ *     the primary glowing control with a real click (or waits for an auto-advance) from the
+ *     start until the flow reports "done", and prints the path.
  * Usage: node scripts/check-prototype.mjs [flow …] [--url=http://localhost:5340] [--dir=clay] [--prefill=off|on]
  * Needs playwright-core and a local Chrome; `pnpm dev` must be running.
  */
@@ -38,7 +39,7 @@ console.log(`menu shows ${menu} flows; checking ${flows.join(', ')} in ${dir}, p
 for (const flow of flows) {
   // 1. main path
   await page.goto(`${url}/#/${flow}`); await page.reload(); await page.waitForTimeout(1000)
-  const path = []; const left = new Set(); let end = 'stuck'; let same = 0
+  const path = []; const left = new Set(); let end = 'stuck'; let same = 0; const covered = []
   for (let i = 0; i < 160; i++) {
     const s = await state()
     if (path.at(-1) !== s.step) {
@@ -47,13 +48,20 @@ for (const flow of flows) {
       path.push(s.step); same = 0
     } else if (++same > 8 && !s.auto) { end = `stuck at ${s.step} (9 taps, no progress)`; break }
     if (s.done) { end = 'done'; break }
-    // Fields first (the "Fill in for me" pill is the primary control until they are filled), then the main button.
-    if (s.primary) { await page.click('[data-hot-primary]', { force: true }); await page.waitForTimeout(350) }
+    // Fields first ("Fill in for me" in the panel), then the main control. Clicks are real ones, in the
+    // middle of what a person sees: a control that is covered or off-screen is reported, then forced.
+    if (await page.$('.proto-fillbtn')) { await page.click('.proto-fillbtn'); await page.waitForTimeout(350) }
+    else if (s.primary) {
+      try { await page.click('[data-hot-primary]', { timeout: 2500 }) }
+      catch { covered.push(s.step); await page.click('[data-hot-primary]', { force: true }) }
+      await page.waitForTimeout(350)
+    }
     else if (s.auto) await page.waitForTimeout(700)
     else { end = `dead end at ${s.step}`; break }
   }
   const ok = end === 'done'
   if (!ok) problems++
+  if (covered.length) { problems += covered.length; console.log(`    BAD the glowing control could not be clicked (covered or off-screen) at: ${[...new Set(covered)].join(', ')}`) }
   console.log(`${ok ? 'OK ' : 'BAD'} ${flow}: main path ${path.length} steps → ${end}\n    ${path.join(' → ')}`)
 
   // 2. every step, loaded directly
