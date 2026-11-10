@@ -1,0 +1,97 @@
+/*
+ * Prototype chrome: the side panel, top bar, device frames and tap hints.
+ * This is a testing tool around the app, not part of SAYO's product UI, so it
+ * uses its own neutral styling (and sits outside the brand themes).
+ */
+html:has(.proto-page, .proto-root), html:has(.proto-page, .proto-root) body, html:has(.proto-page, .proto-root) #root { height: 100%; margin: 0; }
+
+/* ---------- tap hints ---------- */
+@keyframes proto-hot {
+  0%, 100% { box-shadow: 0 0 0 2px rgb(14 165 233 / 0.95), 0 0 0 6px rgb(14 165 233 / 0.25); }
+  50% { box-shadow: 0 0 0 2px rgb(14 165 233 / 0.95), 0 0 0 11px rgb(14 165 233 / 0); }
+}
+[data-hot-auto] { animation: proto-hot 1.5s ease-in-out infinite; position: relative; z-index: 1; }
+@media (prefers-reduced-motion: reduce) {
+  [data-hot-auto] { animation: none; box-shadow: 0 0 0 2px rgb(14 165 233 / 0.95), 0 0 0 5px rgb(14 165 233 / 0.25); }
+}
+
+/* ---------- inside the device ---------- */
+.proto-device, .proto-fill, .proto-screen { height: 100%; }
+.proto-device { position: relative; overflow: hidden; }
+.proto-screen { position: relative; }
+.proto-skip {
+  position: absolute; left: 50%; bottom: 28px; translate: -50% 0; z-index: 40;
+  padding: 10px 16px; border: 0; border-radius: 999px; cursor: pointer; white-space: nowrap;
+  background: #111827; color: #fff; font: 600 13px/1.2 system-ui, sans-serif;
+  box-shadow: 0 6px 20px rgb(0 0 0 / 0.25);
+}
+.proto-skip::before { content: '⏩  '; }
+.proto-toast { position: absolute; inset: auto 0 96px 0; z-index: 70; display: flex; justify-content: center; pointer-events: none; padding: 0 20px; }
+.proto-toast span { background: rgb(17 24 39 / 0.92); color: #fff; padding: 9px 16px; border-radius: 999px; font: 500 13px/1.3 system-ui, sans-serif; text-align: center; box-shadow: 0 6px 20px rgb(0 0 0 / 0.25); }
+
+/* ---------- page layouts ---------- */
+.proto-root { height: 100dvh; }
+.proto-page {
+  min-height: 100dvh; box-sizing: border-box; padding: 24px;
+  display: flex; align-items: center; justify-content: center; gap: 44px;
+  background: #EFEAF0; color: #1F1D24; font-family: 'DM Sans Variable', system-ui, sans-serif;
+}
+.proto-page--desktop { flex-direction: column; justify-content: flex-start; gap: 16px; padding: 16px; }
+.proto-phone {
+  width: 390px; height: 844px; flex: none; border-radius: 52px; overflow: hidden; position: relative; transform: translateZ(0);
+  box-shadow: 0 0 0 10px #1d1b22, 0 0 0 11px #3a3742, 0 30px 80px rgb(40 10 40 / 0.35);
+}
+.proto-browser-wrap { width: 100%; display: flex; justify-content: center; }
+.proto-browser { width: 1280px; flex: none; transform-origin: top center; border-radius: 12px; overflow: hidden; background: #fff; box-shadow: 0 20px 60px rgb(0 0 0 / 0.18); }
+.proto-browser__bar { height: 36px; display: flex; align-items: center; gap: 6px; padding: 0 14px; background: #F4F3F6; border-bottom: 1px solid #E4E2E8; }
+.proto-browser__bar span { width: 11px; height: 11px; border-radius: 50%; background: #D8D5DE; }
+.proto-browser__bar em { margin-left: 16px; font: 400 12px system-ui, sans-serif; color: #6B6875; }
+.proto-browser__body { height: 820px; }
+
+/* ---------- side panel and top bar ---------- */
+.proto-side { width: 320px; flex: none; display: grid; gap: 20px; align-content: start; max-height: 844px; }
+.proto-label { font-size: 11px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; color: #6B6875; margin-bottom: 6px; }
+.proto-title { font: 700 26px/1.15 'DM Sans Variable', system-ui, sans-serif; letter-spacing: -0.01em; margin: 0; color: #1F1D24; }
+.proto-text { font-size: 14px; line-height: 1.5; color: #4B4855; margin: 6px 0 0; }
+.proto-stats { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+.proto-stat { background: #fff; border: 1px solid #E4E2E8; border-radius: 12px; padding: 8px 12px; }
+.proto-stat .proto-label { margin: 0; }
+.proto-stat__value { font-size: 20px; font-weight: 700; font-variant-numeric: tabular-nums; }
+.proto-done { background: #E3F4EC; color: #1F5F47; border-radius: 12px; padding: 10px 12px; font-size: 13px; font-weight: 600; }
+.proto-actions { display: flex; gap: 8px; }
+.proto-btn {
+  flex: 1; min-height: 40px; padding: 0 16px; border-radius: 999px; cursor: pointer; white-space: nowrap;
+  border: 1px solid #C9C5D1; background: transparent; color: #1F1D24; font: 600 14px/1 'DM Sans Variable', system-ui, sans-serif;
+}
+.proto-btn--solid { background: #1F1D24; border-color: #1F1D24; color: #fff; }
+.proto-list { margin: 0; padding-left: 18px; list-style: disc; font-size: 13px; line-height: 1.55; color: #4B4855; }
+.proto-jump { display: grid; gap: 1px; max-height: 250px; overflow-y: auto; padding-right: 4px; }
+.proto-jump button { text-align: left; border: 0; background: none; cursor: pointer; padding: 6px 10px; border-radius: 8px; font: 400 13px/1.3 'DM Sans Variable', system-ui, sans-serif; color: #4B4855; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.proto-jump button:hover { background: rgb(0 0 0 / 0.05); }
+.proto-jump button[aria-current] { background: #fff; color: #1F1D24; font-weight: 700; box-shadow: inset 0 0 0 1px #E4E2E8; }
+.proto-pills { display: flex; flex-wrap: wrap; gap: 6px; }
+.proto-pill { padding: 7px 12px; border-radius: 999px; cursor: pointer; border: 1px solid #C9C5D1; background: transparent; color: #1F1D24; font: 500 13px/1 'DM Sans Variable', system-ui, sans-serif; white-space: nowrap; }
+.proto-pill[aria-pressed='true'] { background: #1F1D24; border-color: #1F1D24; color: #fff; font-weight: 700; }
+.proto-check { display: flex; align-items: center; gap: 8px; font-size: 13px; color: #4B4855; white-space: nowrap; }
+.proto-foot { font-size: 12px; color: #8A8794; margin: 0; }
+
+.proto-top { width: 100%; max-width: 1280px; box-sizing: border-box; display: flex; align-items: center; gap: 12px; flex-wrap: wrap; }
+.proto-top .proto-btn { flex: none; }
+.proto-top__title { margin-right: auto; }
+.proto-top__title .proto-label { margin: 0; }
+.proto-top__stat { font-size: 13px; font-variant-numeric: tabular-nums; color: #4B4855; }
+.proto-select { display: flex; align-items: center; gap: 8px; }
+.proto-select .proto-label { margin: 0; }
+.proto-select select { max-width: 220px; height: 34px; border-radius: 8px; border: 1px solid #C9C5D1; background: #fff; padding: 0 8px; font: 400 13px 'DM Sans Variable', system-ui, sans-serif; }
+
+/* ---------- phone-size menu ---------- */
+.proto-mini {
+  position: absolute; top: 6px; left: 50%; translate: -50% 0; z-index: 65;
+  padding: 5px 12px; border: 0; border-radius: 999px; cursor: pointer; white-space: nowrap;
+  background: rgb(17 24 39 / 0.78); color: #fff; font: 600 11px/1.2 system-ui, sans-serif; backdrop-filter: blur(6px);
+}
+.proto-mini--corner { top: auto; bottom: 12px; left: auto; right: 12px; translate: none; }
+.proto-sheet { position: absolute; inset: 0; z-index: 64; display: flex; justify-content: center; align-items: flex-start; padding-top: 48px; background: rgb(0 0 0 / 0.45); }
+.proto-sheet__card { width: min(86%, 340px); display: grid; gap: 10px; padding: 16px; border-radius: 18px; background: #fff; color: #1F1D24; font-family: system-ui, sans-serif; box-shadow: 0 20px 50px rgb(0 0 0 / 0.3); }
+.proto-sheet__card .proto-text { margin: 0; }
+.proto-sheet__card .proto-check { justify-content: center; }
