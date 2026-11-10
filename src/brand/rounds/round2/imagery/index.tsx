@@ -1,4 +1,5 @@
 import type { CSSProperties } from 'react'
+import { assetUrl } from '../../../../lib/asset'
 import { INK_IMAGES, INK_NOTES } from './ink'
 import { CLAY_IMAGES, CLAY_NOTES } from './clay'
 import { QUIET_IMAGES, QUIET_NOTES } from './quiet'
@@ -24,7 +25,7 @@ export function R2Img({ direction, slot, height, radius, style, position }: { di
   const img = r2image(direction, slot)
   const base: CSSProperties = { display: 'block', width: '100%', height, borderRadius: radius, ...style }
   if (!img) return <div role="img" aria-label="" style={{ ...base, background: 'var(--sayo-hero)' }} />
-  return <img src={img.src} alt={img.alt} loading="lazy" style={{ ...base, objectFit: 'cover', objectPosition: position ?? img.position ?? 'center 30%' }} />
+  return <img src={assetUrl(img.src)} alt={img.alt} loading="lazy" style={{ ...base, objectFit: 'cover', objectPosition: position ?? img.position ?? 'center 30%' }} />
 }
 
 export type { R2Direction, R2Image, R2Slot } from './types'
