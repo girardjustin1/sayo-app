@@ -18,5 +18,8 @@ export const useDocsDirection = () =>
     () => current,
   )
 
-/** Link into the clickable prototype: the local dev server, or /prototype/ next to the hosted Storybook. */
-export const protoUrl = (hash = '#/') => (['localhost', '127.0.0.1'].includes(window.location.hostname) ? `http://localhost:5340/${hash}` : `./prototype/${hash}`)
+/**
+ * Link into the clickable prototype: the prototype dev server (`pnpm dev`) while Storybook runs in
+ * dev mode, otherwise /prototype/, which every Storybook build ships next to itself.
+ */
+export const protoUrl = (hash = '#/') => (import.meta.env.DEV ? `http://localhost:5340/${hash}` : `./prototype/${hash}`)
